@@ -1,0 +1,25 @@
+/* ==========================================================================
+   Base & layout primitives
+   Reset, document defaults, the page container, tab panels and the
+   small shared text primitives (section titles, hints, empty states, footer).
+   ========================================================================== */
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--font-body);
+  background:var(--bg);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;font-size:14px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 24px}
+main{padding:26px 0 70px}
+.panel{display:none;animation:fade .25s ease}
+.panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hint{font-size:12px;color:var(--mute);margin:14px 2px 12px}
+.section-title{font-size:16px;font-weight:700;color:var(--navy);margin:4px 0 4px}
+.section-sub{font-size:13px;color:var(--mute);margin-bottom:18px;max-width:780px}
+.empty-state{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:40px;text-align:center;color:var(--mute)}
+.empty-state .big{font-size:15px;color:var(--navy);font-weight:700;margin-bottom:6px}
+.foot{text-align:center;color:var(--mute);font-size:11px;padding:20px 0 8px;border-top:1px solid var(--line);margin-top:30px}
+.foot b{color:var(--navy)}
+
+/* Version stamp in the page footer, set by main.js */
+#verStamp{color:var(--navy);font-weight:700}

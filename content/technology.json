@@ -1,0 +1,73 @@
+{
+  "screen": {
+    "eyebrow": "Advisory guidance",
+    "title": "Technical Recommendations &amp; Attention Points",
+    "intro": "Guidance for the deployment programme: where to ground the pricing model, how to approach ERP integration and migration, and what to design in around security, data and operations. These are recommendations and watch-outs to steer the work, not a checklist to score."
+  },
+  "print": {
+    "intro": "Technical recommendations and attention points for the deployment programme."
+  },
+  "blocks": [
+    {
+      "key": "func",
+      "title": "1 · Functional Fit",
+      "lead": "Recommendations for grounding the pricing capability in the organisation's own reality.",
+      "items": [
+        {
+          "h": "Prove the model on real data, early",
+          "b": "Run the design against live production data (the organisation's own part hierarchies, cost structures, customer and segment definitions and historical price points) well before go-live. Exercising the full derivation chain, from list through market and dealer to customer price, on representative data is the surest way to learn whether the rule logic, the margin model and the corridor calculations hold at real scale and data quality. Treat incomplete inputs as a design case in their own right: decide up front how the model bridges a missing cost or driver rather than discovering at runtime that the calculation simply stops."
+        },
+        {
+          "h": "Keep configuration ahead of custom code",
+          "b": "Map each capability to whether it is met by configuration or needs custom development, and keep the balance firmly on the configuration side. Native, configured coverage keeps implementation risk, cost and time-to-value down; a long tail of custom code is the most common reason these programmes slip on schedule and budget. Revisit this balance at each phase boundary so custom work does not quietly accumulate."
+        },
+        {
+          "h": "Steer by measured outcomes",
+          "b": "Track the capability in numbers rather than narrative: how close proposed prices land to validated targets, the share of the portfolio that prices automatically versus needing a manual touch, the accuracy of the margin model per product line, and whether simulated impact matches what is realised. Make simulation-versus-actual a standing review metric. It is the clearest early signal that the model is drifting."
+        }
+      ]
+    },
+    {
+      "key": "erp",
+      "title": "2 · ERP Integration & Migration",
+      "lead": "Attention points for connecting to the core ERP estate and carrying pricing safely through a platform migration.",
+      "items": [
+        {
+          "h": "Decide the integration pattern deliberately",
+          "b": "Settle early whether pricing connects to the ERP natively or through a separate middleware layer, and write down where the boundary sits between the pricing team's interfaces and those owned by the integration or ERP team. A frequent failure point is hard-coded values buried in interfaces that later restrict conditions, data structures or volume. Design these out from the start and keep the interface contract explicit and documented."
+        },
+        {
+          "h": "Plan for two ERP generations at once",
+          "b": "Assume a migration window in which some processes still run on the current ERP while others move to the next generation. Plan to run both integrations in parallel through that window, map old data structures onto the new model without bespoke code, and confirm forward compatibility with the target platform and its cloud variants. Build in data validation and reconciliation between the two landscapes and a dedicated test environment for migration rehearsals. Do not leave reconciliation to be improvised at cutover."
+        },
+        {
+          "h": "Design for the ERP being unavailable",
+          "b": "Outages, network faults and planned maintenance will take the ERP offline at some point. Make sure the pricing layer degrades gracefully when that happens, queueing and reconciling rather than losing or duplicating price changes, and confirms receipt once the link is restored, so no silent price gap reaches invoicing."
+        },
+        {
+          "h": "Account for the non-ERP sources too",
+          "b": "Pricing draws on more than the core ERP: data warehouses and analytics stores, master-data and product-information systems, the CRM and competitive feeds. Plan the inbound interfaces (modern APIs, bulk file transfer, message exchange) and the outbound publication back to every consuming system as part of the same integration design, not as an afterthought."
+        }
+      ]
+    },
+    {
+      "key": "sec",
+      "title": "3 · Security, Data & Operations",
+      "lead": "Recommendations for the non-functional backbone: security, data protection and the service levels the live service must sustain.",
+      "items": [
+        {
+          "h": "Treat security and data protection as design inputs",
+          "b": "Build in the security baseline from the outset: an information-security management approach aligned to a recognised standard, role-based access with least privilege and a privilege-approval step, single sign-on, encryption in transit and at rest, protection for internet-facing services, tamper-protected logging of critical events, tested backup and disaster recovery, and a documented operational model. Confirm early where data is stored and which region hosts it, which sub-processors are involved, and how retention, deletion and data-subject requests will be handled. These are hard to retrofit."
+        },
+        {
+          "h": "Model the full cost, not just the licence",
+          "b": "Understand the licence basis (users, transactions, data objects or a flat fee) and how it scales if early usage forecasts are not met, so the commercial model does not become a constraint later. Bring the indirect cost drivers and the full purchase, implementation and run cost into the business case, with training and onboarding costed explicitly rather than assumed."
+        },
+        {
+          "h": "Size for peak runtimes and real cadences",
+          "b": "Make sure batch and on-demand jobs finish inside their windows: full-portfolio recalculation, mass loads and distribution runs all need load-tested runtimes, with responsive interactive use and reliable overnight completion at period-end peaks. Design for the pricing cadences the business actually runs (scheduled, event-triggered and ad-hoc) and keep approval, communication and activation dates separable. Agree the operational service levels (response and resolution by severity, support model, test environments, and a clear patch, upgrade and end-of-life path) before the service goes live, not after."
+        }
+      ]
+    }
+  ]
+}

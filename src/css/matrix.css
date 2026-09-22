@@ -1,0 +1,43 @@
+/* ==========================================================================
+   View: Process Matrix
+   The 9 x 3 grid: canvas band, ownership band, step header cards,
+   tier row labels and the clickable cells.
+   ========================================================================== */
+
+.mx-scroll{overflow-x:auto;padding-bottom:6px}
+.mx{min-width:1080px;display:flex;flex-direction:column;gap:7px}
+/* --steps is set on .mx by matrix.js / heatmap.js from the number of steps
+   in taxonomy.json, so adding or removing a step does not need a CSS edit. */
+.mx-band{display:grid;grid-template-columns:178px repeat(var(--steps,9),1fr);gap:6px}
+.mx-rowlabel{display:flex;flex-direction:column;justify-content:center;padding:4px 6px}
+.bl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700}
+.canvas-cell{border-radius:8px;padding:8px 12px;color:#fff;display:flex;flex-direction:column;justify-content:center;min-height:42px}
+.cc-name{font-size:12.5px;font-weight:700;letter-spacing:.01em}
+.cc-sub{font-size:10px;opacity:.8;margin-top:1px}
+.band-corner{align-items:flex-start;justify-content:flex-end}
+.owner-band{margin-top:-2px}
+.owner-cell{display:flex;align-items:center;justify-content:center;padding:2px}
+.owner-pill{font-size:10px;font-weight:700;color:#fff;padding:3px 9px;border-radius:20px;letter-spacing:.02em;white-space:nowrap}
+.step-card{background:var(--navy);color:#fff;border-radius:9px 9px 0 0;padding:10px 10px 11px;cursor:pointer;
+  position:relative;transition:all .16s;border:1px solid var(--navy);min-height:74px}
+.step-card:hover{background:var(--navy-2);transform:translateY(-2px)}
+.step-card .sn{font-size:18px;font-weight:800;color:var(--teal);line-height:1}
+.step-card .sname{font-weight:700;font-size:11.5px;margin-top:5px;line-height:1.25}
+.step-card .scount{position:absolute;top:8px;right:8px;background:var(--teal);color:#fff;font-size:10.5px;font-weight:700;
+  border-radius:11px;min-width:19px;height:19px;display:flex;align-items:center;justify-content:center;padding:0 5px}
+.step-card .scount.zero{background:rgba(255,255,255,.16);color:#BFD6DF}
+.step-corner{align-items:flex-start;justify-content:flex-end}
+.tier-label{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 12px;box-shadow:var(--shadow)}
+.tier-label .tn{font-weight:700;font-size:12.5px;color:var(--navy)}
+.tier-label .ts{font-size:10.5px;color:var(--mute);margin-top:2px}
+.cell{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:9px;cursor:pointer;transition:all .15s;
+  min-height:64px;display:flex;flex-direction:column;gap:6px;position:relative}
+.cell:hover{box-shadow:var(--shadow-l);transform:translateY(-2px);border-color:var(--sky)}
+.cell .cell-n{font-size:11px;color:var(--mute);font-weight:600}
+.cell .cell-foot{margin-top:auto;display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.chip{font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;color:#fff;letter-spacing:.02em}
+.cell .tb{margin-left:auto;font-size:10.5px;font-weight:800;color:var(--red)}
+.cell.has-ticks{border-color:var(--red);box-shadow:0 0 0 1px var(--red) inset}
+.cell.empty{background:#FAFBFC;cursor:default;align-items:center;justify-content:center}
+.cell.empty:hover{box-shadow:none;transform:none;border-color:var(--line)}
+.cell .cell-dash{color:#C7D0D6;font-size:16px}

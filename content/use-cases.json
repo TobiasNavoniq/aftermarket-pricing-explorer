@@ -1,0 +1,476 @@
+{
+  "U01": {
+    "code": "U01",
+    "name": "Base Price-Structure Process",
+    "purpose": "Establish the central price structure: the reference price levels and the rules that govern how every part is priced.",
+    "actors": [
+      "Pricing Strategy Lead",
+      "System Admin / Key User"
+    ],
+    "trigger": "A new pricing model is stood up, or the annual structure review revises segments and reference levels.",
+    "flow": [
+      "Define the segment and product-line structure the portfolio will be priced against.",
+      "Set the reference price levels (list, floor, target, peer) per segment.",
+      "Configure the rule logic that maps a part's attributes and cost to a proposed price.",
+      "Publish the structure as the governed baseline all downstream steps inherit."
+    ],
+    "inputs": "Product master data, cost data, segment definitions, strategic price positioning.",
+    "outputs": "A governed price-structure baseline with reference levels and rules per segment.",
+    "pain": "This is where the central and market levels first diverge. Without one shared structure, every later step compounds the inconsistency."
+  },
+  "U02": {
+    "code": "U02",
+    "name": "Volume Tiers, Pack & Rounding Rules",
+    "purpose": "Define quantity-based price tiers, pack sizes, order minimums and the rounding conventions applied to central prices.",
+    "actors": [
+      "Pricing Operations / IT",
+      "System Admin / Key User"
+    ],
+    "trigger": "Structure definition, or a change to tier or rounding policy.",
+    "flow": [
+      "Define tier breaks, pack sizes and order minimums per product line.",
+      "Define rounding tables bound to segment, currency or channel.",
+      "Validate outputs against the reference price levels."
+    ],
+    "inputs": "Reference price levels, tier and pack policy, currency and tax conventions.",
+    "outputs": "Reusable tier, pack and rounding rules applied automatically during price setting.",
+    "pain": "Inconsistent tiers and rounding quietly fragment a single price into many slightly different ones across markets."
+  },
+  "U03": {
+    "code": "U03",
+    "name": "Customer Group Structures",
+    "purpose": "Link customers into parent and subsidiary structures to support consolidated, group-level pricing.",
+    "actors": [
+      "Pricing Strategy Lead",
+      "Product / Portfolio Pricing Manager"
+    ],
+    "trigger": "A customer group is onboarded or restructured.",
+    "flow": [
+      "Identify the parent and its subsidiary entities.",
+      "Define which pricing decisions apply at group versus entity level.",
+      "Maintain the grouping as customers change."
+    ],
+    "inputs": "Customer master data, group structure definitions.",
+    "outputs": "A maintained customer group hierarchy for consolidated pricing.",
+    "pain": "Without group structures, the same buying group is priced inconsistently across its entities."
+  },
+  "U04": {
+    "code": "U04",
+    "name": "New-Part Pricing",
+    "purpose": "Price a brand-new part that has no prior reference point in the system.",
+    "actors": [
+      "Product / Portfolio Pricing Manager",
+      "Pricing Analyst"
+    ],
+    "trigger": "A new part is introduced to the catalogue.",
+    "flow": [
+      "Assign the new part to its family, product line and segment.",
+      "Select the pricing method per the segment rule, bridging any missing input.",
+      "Generate a proposed first price from cost, rules and any competitive reference.",
+      "Simulate margin, then route the proposal for approval and storage."
+    ],
+    "inputs": "New-part master data, cost, segment rule, competitive reference where available.",
+    "outputs": "An approved first price for the new part.",
+    "pain": "New parts routinely wait in a manual queue for a first price, delaying availability and leaving revenue uncaptured."
+  },
+  "U05": {
+    "code": "U05",
+    "name": "Method-Specific Pricing (cost-plus / fixed)",
+    "purpose": "Apply method-specific pricing (mark-up, cost-plus or fixed price) that overrides the default value or volume method for designated parts or customers.",
+    "actors": [
+      "Product / Portfolio Pricing Manager"
+    ],
+    "trigger": "A part type or internal customer requires a defined method, for example a fixed mark-up on cost.",
+    "flow": [
+      "Identify the part type or customer and its required method.",
+      "Apply the method and ensure it overrides the default methodology.",
+      "Validate against corridor and margin floor, then store."
+    ],
+    "inputs": "Part type, cost, method rule, customer flags.",
+    "outputs": "A method-correct price that overrides the default where required.",
+    "pain": "Method exceptions tend to bypass the governed rules, creating untracked inconsistencies."
+  },
+  "U06": {
+    "code": "U06",
+    "name": "Bulk Price Loading",
+    "purpose": "Load a large set of prices in one operation with validation and a profit-impact preview.",
+    "actors": [
+      "Pricing Operations / IT",
+      "Product / Portfolio Pricing Manager"
+    ],
+    "trigger": "A mass price load: migration, periodic refresh, or a large new range.",
+    "flow": [
+      "Stage the load file and validate structure and values.",
+      "Preview the aggregate margin and revenue impact.",
+      "Commit on approval, with the ability to roll back.",
+      "Log the load for audit."
+    ],
+    "inputs": "Price load file, validation rules.",
+    "outputs": "A validated, committed or rolled-back bulk price load.",
+    "pain": "Without validation and rollback, mass loads are a common source of large, hard-to-trace pricing errors."
+  },
+  "U21": {
+    "code": "U21",
+    "name": "Margin Model & Value-Based Setting",
+    "purpose": "Set value-part prices from a margin model: translate internal and external drivers into a target margin, then refine item by item from value attributes.",
+    "actors": [
+      "Data Science / Optimisation",
+      "Product / Portfolio Pricing Manager",
+      "Pricing Analyst"
+    ],
+    "trigger": "Value parts need a value-based price rather than a cost-plus price.",
+    "flow": [
+      "Score internal and external drivers and compute the margin position per product line.",
+      "Map the position to a target margin via the calibrated margin model.",
+      "Correct the target margin for very high or very low-cost parts.",
+      "Set the reference price, then adjust item prices from value attributes, and visualise the margin curve."
+    ],
+    "inputs": "Driver scores, calibration weights, target-margin mapping, value attributes, cost.",
+    "outputs": "A value-based price per part with a transparent, explainable margin curve.",
+    "pain": "Without a margin model and a visible curve, value-based pricing is opaque and impossible to defend or scale."
+  },
+  "U07": {
+    "code": "U07",
+    "name": "Differentiated Increase",
+    "purpose": "Apply a scoped, differentiated general price change (percentage or absolute) across a chosen set of parts.",
+    "actors": [
+      "Product / Portfolio Pricing Manager",
+      "Pricing Analyst",
+      "Controller / Finance"
+    ],
+    "trigger": "A cost wave, inflation pass-through, or strategic repricing.",
+    "flow": [
+      "Select the scope: families, segments, regions.",
+      "Define the differentiated adjustment and any caps.",
+      "Simulate the margin and revenue effect.",
+      "Route for approval and schedule activation."
+    ],
+    "inputs": "Scope selection, adjustment parameters, cost and margin data.",
+    "outputs": "An approved, scoped differentiated price adjustment.",
+    "pain": "A differentiated general increase with reliable impact simulation is one of the most-wanted and least-supported capabilities in practice."
+  },
+  "U08": {
+    "code": "U08",
+    "name": "Central Pricing & Action Reporting",
+    "purpose": "Report central price, margin and volume performance to surface where pricing action is needed.",
+    "actors": [
+      "Pricing Analyst",
+      "Controller / Finance"
+    ],
+    "trigger": "Periodic review, or an alert on a KPI breach.",
+    "flow": [
+      "Aggregate price, margin and volume by segment and family.",
+      "Compare against targets, corridors and prior periods.",
+      "Highlight outliers and candidates for action."
+    ],
+    "inputs": "Transaction, price and cost history.",
+    "outputs": "Central pricing performance reports and an action shortlist.",
+    "pain": "Reporting that does not point to a next action leaves teams reacting late rather than steering."
+  },
+  "U22": {
+    "code": "U22",
+    "name": "Surcharge, Tariff & Channel Linkage",
+    "purpose": "Track component surcharges and tariffs and link a cost or price change in one channel to the related service channel.",
+    "actors": [
+      "Product / Portfolio Pricing Manager",
+      "Pricing Analyst",
+      "Controller / Finance"
+    ],
+    "trigger": "A surcharge or tariff change, or a price change in one channel with a dependency in another.",
+    "flow": [
+      "Capture the surcharge or tariff at component level.",
+      "Reflect it into the central price build-up.",
+      "Propagate the linked change to the related service channel.",
+      "Compare the resulting levels against the independent channel."
+    ],
+    "inputs": "Component cost elements, surcharge and tariff schedules, channel linkage, competitive references.",
+    "outputs": "Central prices that correctly reflect surcharges, tariffs and channel linkage.",
+    "pain": "Surcharges, tariffs and channel linkage handled off-system are a recurring source of margin error in heavy-parts businesses."
+  },
+  "U09": {
+    "code": "U09",
+    "name": "Central-to-Market Handover",
+    "purpose": "Release the approved central price structure to the market organisations in a controlled, transparent way.",
+    "actors": [
+      "Product / Portfolio Pricing Manager",
+      "Market / Regional Pricer"
+    ],
+    "trigger": "Central prices and structures are approved and ready for local processing.",
+    "flow": [
+      "Package the approved prices, structures and governance parameters.",
+      "Release to the market level with a shared status and trail.",
+      "Confirm receipt and acceptance before local work begins."
+    ],
+    "inputs": "Approved central prices, corridors, rules, approval limits.",
+    "outputs": "A confirmed handover of priced structure to the markets.",
+    "pain": "When central and market levels run on disconnected systems, handover is an opaque manual transfer that loses governance on the way."
+  },
+  "U10": {
+    "code": "U10",
+    "name": "Market Enablement & Worklist Creation",
+    "purpose": "Give each market a worklist of exactly what changed and what needs local action.",
+    "actors": [
+      "Pricing Operations / IT",
+      "Market / Regional Pricer"
+    ],
+    "trigger": "A handover or central change that markets must process.",
+    "flow": [
+      "Compute the change each market must act on.",
+      "Generate a prioritised local worklist.",
+      "Track completion against the worklist."
+    ],
+    "inputs": "Handover package, prior local state.",
+    "outputs": "A per-market worklist with completion tracking.",
+    "pain": "Without an automatic worklist, markets discover changes late and process them inconsistently."
+  },
+  "U11": {
+    "code": "U11",
+    "name": "Market Price Calculation",
+    "purpose": "Derive the local market list price from the central price using a factor scoring model and local rules.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Pricing Analyst"
+    ],
+    "trigger": "A handover, an exchange-rate move, or a scheduled local recalculation.",
+    "flow": [
+      "Compute the market factor against the central price using the local scoring model.",
+      "Apply local corridors, caps and rounding.",
+      "Check consistency against observed competitive levels.",
+      "Simulate local margin and prepare for approval."
+    ],
+    "inputs": "Central price, local scoring criteria, corridors, caps, competitive references.",
+    "outputs": "A derived, validated market list price.",
+    "pain": "Manual derivation cannot keep pace with central changes and exchange-rate moves, so local prices drift out of policy."
+  },
+  "U12": {
+    "code": "U12",
+    "name": "Exchange-Rate Handling",
+    "purpose": "Manage revisable exchange rates and recalculate affected prices when a rate threshold is crossed.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Pricing Operations / IT"
+    ],
+    "trigger": "An exchange-rate update or a threshold breach.",
+    "flow": [
+      "Maintain the relevant revisable rate set.",
+      "Detect when a rate move crosses the recalculation threshold.",
+      "Recalculate and flag affected prices for review."
+    ],
+    "inputs": "Exchange-rate feeds, threshold configuration.",
+    "outputs": "Recalculated prices for affected parts.",
+    "pain": "Unmanaged exchange-rate handling either over-reacts to noise or misses material moves entirely."
+  },
+  "U13": {
+    "code": "U13",
+    "name": "Dealer Price via Discount Structure",
+    "purpose": "Calculate dealer prices off the market list price using customer-specific, multi-dimension discount structures.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Key Account / Sales Manager"
+    ],
+    "trigger": "Local price derivation for a customer with a discount structure.",
+    "flow": [
+      "Select the customer's discount structure, for example competitive pressure against average price level.",
+      "Apply it off the market list price to derive the dealer price.",
+      "Support changing the structure's dimensions or their number.",
+      "Validate against minimum margin."
+    ],
+    "inputs": "Market list price, discount structure definition and dimensions.",
+    "outputs": "A dealer price per customer and customer type.",
+    "pain": "Discount structures maintained by hand drift quickly and obscure true net realisation."
+  },
+  "U23": {
+    "code": "U23",
+    "name": "Customer-Price Calculation with Margin Check",
+    "purpose": "Calculate the final customer price off the dealer price, by structure or mark-up, with a minimum-margin check per entity.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Controller / Finance"
+    ],
+    "trigger": "A customer price needs to be set off the derived dealer price.",
+    "flow": [
+      "Apply the customer discount structure or a cost mark-up.",
+      "Run the minimum-margin check, differentiated per entity type.",
+      "Resolve any breach before storing.",
+      "Publish alongside the base price."
+    ],
+    "inputs": "Dealer price, customer structure or mark-up, minimum-margin thresholds.",
+    "outputs": "A margin-compliant customer price.",
+    "pain": "Customer-price calculation without an enforced margin check is where late-stage leakage concentrates."
+  },
+  "U14": {
+    "code": "U14",
+    "name": "Market Price Change",
+    "purpose": "Run a local price change through impact preview, approval and activation.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Controller / Finance",
+      "Key Account / Sales Manager"
+    ],
+    "trigger": "A local repricing decision, cost pass-through, or competitive response.",
+    "flow": [
+      "Define the change scope and proposed new prices.",
+      "Show the margin and revenue impact to the approver.",
+      "Route through the conditional approval workflow with tiered discount gates.",
+      "Activate on approval, separating communication and activation dates."
+    ],
+    "inputs": "Current local prices, cost and margin data, approval rules.",
+    "outputs": "An approved, activated local price change with rationale logged.",
+    "pain": "Approvers frequently decide without seeing the impact number, and approvals live in email rather than a tracked workflow."
+  },
+  "U15": {
+    "code": "U15",
+    "name": "Simulate & Conduct a General Increase",
+    "purpose": "Simulate a general increase iteratively to reach a margin or revenue target, with suggested moves, then conduct it.",
+    "actors": [
+      "Market / Regional Pricer",
+      "Pricing Analyst"
+    ],
+    "trigger": "A periodic general increase or a target-driven repricing.",
+    "flow": [
+      "Change inputs such as exchange rate or drivers in simulation mode without implementing.",
+      "Calculate the effect on pricing KPIs.",
+      "Iterate to meet the target, and save and share named scenarios.",
+      "Promote the chosen scenario to an approved change."
+    ],
+    "inputs": "Current prices, target KPIs, driver and exchange-rate inputs.",
+    "outputs": "A saved, approved scenario aligned to the target.",
+    "pain": "Teams cannot test a general increase against targets before committing, so increases are blunt and miss the goal."
+  },
+  "U16": {
+    "code": "U16",
+    "name": "Campaign & Promotion Pricing",
+    "purpose": "Run time-bound promotional prices with scoped validity, margin checks and automatic revert.",
+    "actors": [
+      "Key Account / Sales Manager",
+      "Market / Regional Pricer",
+      "Controller / Finance"
+    ],
+    "trigger": "A planned promotion, a slow-mover push, or a competitive campaign.",
+    "flow": [
+      "Define the campaign scope, price and validity window.",
+      "Check minimum-margin and corridor compliance.",
+      "Route for approval and schedule activation.",
+      "Revert automatically at campaign end and measure uplift."
+    ],
+    "inputs": "Campaign scope, promotional price, margin floors, validity dates.",
+    "outputs": "A governed, time-boxed campaign price with measured effect.",
+    "pain": "Campaigns run outside the governed system tend to skip margin checks and never get their uplift measured."
+  },
+  "U17": {
+    "code": "U17",
+    "name": "Special & Regional Price Requests",
+    "purpose": "Capture and maintain distributor, importer and key-account prices and regional requests with controlled eligibility.",
+    "actors": [
+      "Key Account / Sales Manager",
+      "Controller / Finance"
+    ],
+    "trigger": "A negotiated agreement or a regional special-price request.",
+    "flow": [
+      "Capture the request and its rationale from the region.",
+      "Apply the eligible price method and validate against floors.",
+      "Route through tiered approval gates.",
+      "Track validity and review on expiry."
+    ],
+    "inputs": "Request terms, eligibility rules, margin floors.",
+    "outputs": "An approved, time-bound special or regional price.",
+    "pain": "Special and regional prices proliferate without controlled eligibility and expiry, eroding net realisation."
+  },
+  "U24": {
+    "code": "U24",
+    "name": "Agreements, Bonus & Long-Term Deals",
+    "purpose": "Manage commercial conditions (customer discounts, dealer bonuses, target agreements and long-term agreements) and simulate their scenarios.",
+    "actors": [
+      "Key Account / Sales Manager",
+      "Controller / Finance",
+      "Pricing Analyst"
+    ],
+    "trigger": "A new or renewing agreement, bonus scheme or long-term negotiation.",
+    "flow": [
+      "Capture the commercial conditions: discounts, bonus, targets.",
+      "Store and process the contracts in the agreement module.",
+      "Simulate long-term-agreement scenarios against cost development and volume commitments.",
+      "Alert before supply obligations or contract end dates lapse."
+    ],
+    "inputs": "Contract terms, turnover thresholds, cost development, volume scenarios.",
+    "outputs": "Governed agreements with simulated scenarios and obligation alerts.",
+    "pain": "Agreements and long-term deals managed off-system hide their true margin effect and let obligations lapse unnoticed."
+  },
+  "U25": {
+    "code": "U25",
+    "name": "Bid Monitoring & History",
+    "purpose": "Monitor the bidding process and inform new quotations with bid history.",
+    "actors": [
+      "Key Account / Sales Manager",
+      "Pricing Analyst"
+    ],
+    "trigger": "A new bid request or an in-flight bid to monitor.",
+    "flow": [
+      "Capture the bid scope and required price points.",
+      "Check bid history for comparable past responses and outcomes.",
+      "Support the response within governance and margin floors.",
+      "Monitor the bid to decision."
+    ],
+    "inputs": "Bid scope, historical bid data, margin floors.",
+    "outputs": "A history-informed, governed bid response.",
+    "pain": "Without bid history, each quotation is built from scratch and repeats earlier pricing mistakes."
+  },
+  "U18": {
+    "code": "U18",
+    "name": "Central Price Publication",
+    "purpose": "Publish approved central prices to the consuming ERP, logistics, product-information and invoicing systems with validated timing.",
+    "actors": [
+      "Pricing Operations / IT",
+      "Product / Portfolio Pricing Manager"
+    ],
+    "trigger": "Central prices are approved and due for activation.",
+    "flow": [
+      "Package approved prices with their validity dates.",
+      "Publish to the consuming systems including product information.",
+      "Confirm receipt and consistency.",
+      "Separate approval, communication and activation dates."
+    ],
+    "inputs": "Approved central prices, validity dates, target-system interfaces.",
+    "outputs": "Published central prices confirmed in the consuming systems.",
+    "pain": "Publication without confirmation lets silent gaps reach invoicing and the customer."
+  },
+  "U19": {
+    "code": "U19",
+    "name": "Market Price Distribution",
+    "purpose": "Distribute approved market prices flexibly to local consuming systems, channels and customer-specific formats.",
+    "actors": [
+      "Pricing Operations / IT",
+      "Market / Regional Pricer"
+    ],
+    "trigger": "Local prices are approved and due for distribution.",
+    "flow": [
+      "Select what to distribute: full or delta, range, future-dated.",
+      "Distribute via the right interface, in customer-specific formats.",
+      "Confirm receipt and synchronise validity dates centrally and locally.",
+      "Surface cross-market price differences for the same part."
+    ],
+    "inputs": "Approved local prices, channel interfaces, customer formats.",
+    "outputs": "Distributed local prices with synchronised validity.",
+    "pain": "Validity-date mismatch and manual reformatting per customer produce inconsistent live prices and wasted effort."
+  },
+  "U20": {
+    "code": "U20",
+    "name": "Price Audit, History & Compliance",
+    "purpose": "Maintain a complete, retained audit trail and full traceability for every price change, with retention and deletion handling.",
+    "actors": [
+      "Controller / Finance",
+      "Pricing Operations / IT",
+      "System Admin / Key User"
+    ],
+    "trigger": "Any price change, or a periodic audit or compliance review.",
+    "flow": [
+      "Log who, what, when and why for every change under a unique reference.",
+      "Maintain traceability from the final price back to rule, driver, cost and approval.",
+      "Enforce retention, deletion and data-subject policies.",
+      "Generate compliance and price-health reports from the record."
+    ],
+    "inputs": "All pricing events, approval records, retention policy.",
+    "outputs": "A retained, queryable audit trail and compliance reports.",
+    "pain": "Audit demands (long retention, full traceability and deletion handling) recur everywhere yet are usually assembled manually."
+  }
+}

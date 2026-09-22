@@ -1,0 +1,49 @@
+/* ==========================================================================
+   Design tokens
+   Brand palette, surfaces, heat-map ramp, typography and shadows.
+   Every other stylesheet reads these: change a colour here, not in a component.
+
+   Re-skinning the tool for another brand is a one-file job:
+   --shell / --shell-accent drive the top nav and welcome screen,
+   --navy / --teal drive the matrix, explainer, roadmap and report.
+   ========================================================================== */
+
+:root{
+  /* ---- Shell chrome (top nav, welcome screen, stage nav) ---- */
+  --shell:#0E1F38;            /* nav background                       */
+  --shell-accent:#4698A5;     /* active tab underline, primary CTA    */
+  --shell-accent-d:#2D6873;   /* CTA hover                            */
+  --shell-accent-l:#8EC9D1;   /* nav title, subdued accent text       */
+  --shell-ink:#1A2535;        /* body text on shell surfaces          */
+  --shell-mute:#6B7A90;       /* secondary text on shell surfaces     */
+  --shell-line:#DDE3EC;       /* borders on shell surfaces            */
+  --shell-bg:#F4F6F9;         /* welcome screen background            */
+  --shell-ok:#1D7A50;         /* completed stage tab                  */
+
+  /* ---- Core tool palette (matrix, explainer, heat map, roadmap, report) ---- */
+  --navy:#003B5C; --navy-2:#0A2F45; --teal:#008CA8; --teal-d:#066B80;
+  --sky:#4A90A4; --ink:#1A2730; --mute:#5F6A72; --line:#E2E8EC;
+  --bg:#F4F7F9; --card:#FFFFFF; --paper:#FBFCFD;
+
+  /* ---- Logic-layer accents (D / S / O). Must match layers[].color in
+          content/taxonomy.json, which is what the JS actually renders. ---- */
+  --blue:#2F7FA6; --green:#3F8F5B; --amber:#C98A1B; --red:#C0392B;
+
+  /* ---- Heat-map intensity ramp, lightest to darkest ---- */
+  --h0:#EAF6F9; --h1:#CDE9EF; --h2:#9FD6E0; --h3:#5FB9C9; --h4:#1E97AE;
+
+  /* ---- Typography ----
+     Two intentional stacks: the shell chrome is Inter, the tool surfaces and
+     the printed report stay on the system UI stack so print output is stable
+     even when the webfont has not loaded. ---- */
+  --font-ui:'Inter',"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+  --font-body:"Segoe UI",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  /* Figures and tracked labels in the printed report. Consolas first, to match
+     the ThinkTrooper PDF house style. */
+  --font-figure:Consolas,'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+
+  /* ---- Elevation ---- */
+  --shadow:0 1px 3px rgba(16,42,58,.08),0 6px 24px rgba(16,42,58,.06);
+  --shadow-l:0 2px 6px rgba(16,42,58,.10),0 12px 40px rgba(16,42,58,.10);
+}

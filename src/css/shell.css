@@ -1,0 +1,102 @@
+/* ==========================================================================
+   Application shell
+   The top navigation bar, the session menu, the welcome screen
+   (stage cards, engagement input, 9-step canvas grid) and the stage nav.
+   ========================================================================== */
+
+/* ══ TT SHELL: VBP-style nav + welcome + stagenav ══ */
+.tt-nav {
+  background:var(--shell);
+  padding:.8rem 2rem;
+  display:flex;align-items:center;gap:1.25rem;
+  position:sticky;top:0;z-index:400;
+  border-bottom:1px solid rgba(70,152,165,.2);
+  flex-shrink:0;
+}
+.tt-nav-left{display:flex;align-items:center;gap:1.25rem;flex:1;min-width:0;}
+.tt-nav-logo{display:flex;align-items:center;gap:10px;}
+.tt-nav-logo img{height:28px;width:auto;filter:brightness(0) invert(1);}
+.tt-nav-wm{display:flex;flex-direction:column;gap:1px;}
+.tt-nav-wm-a{font-size:13px;font-weight:700;color:#fff;letter-spacing:.5px;line-height:1.1;font-family:var(--font-ui);}
+.tt-nav-wm-b{font-size:8.5px;color:var(--shell-accent-l);letter-spacing:1.5px;text-transform:uppercase;line-height:1;font-family:var(--font-ui);}
+.tt-nav-div{width:1px;height:18px;background:rgba(255,255,255,.15);}
+.tt-nav-tb{display:flex;flex-direction:column;justify-content:center;}
+.tt-nav-title{font-size:16px;color:var(--shell-accent-l);font-weight:700;letter-spacing:.3px;font-family:var(--font-ui);}
+.tt-nav-byline{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.5px;font-family:var(--font-ui);}
+.tt-nav-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.tt-eng-name{font-size:13px;color:rgba(255,255,255,.75);font-family:var(--font-ui);}
+.tt-eng-name b{color:#fff;font-weight:600;}
+.tt-eng-name.empty{color:rgba(255,255,255,.35);font-style:italic;font-weight:400;}
+.tt-menu-wrap{position:relative;}
+.tt-menu-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.8);padding:7px 12px;border-radius:6px;font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--font-ui);transition:all .15s;}
+.tt-menu-btn:hover{background:rgba(255,255,255,.15);color:#fff;}
+.tt-menu{position:absolute;top:calc(100% + 8px);right:0;width:196px;background:#fff;border:1px solid var(--shell-line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.18);padding:6px;display:none;z-index:410;}
+.tt-menu.open{display:block;}
+.tt-menu-item{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;color:var(--shell-ink);padding:9px 10px;border-radius:6px;font-size:12.5px;font-weight:500;text-align:left;cursor:pointer;font-family:var(--font-ui);position:relative;overflow:hidden;}
+.tt-menu-item:hover{background:var(--shell-bg);}
+.tt-menu-item input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.tt-menu-flash{font-size:11px;color:var(--shell-accent-d);text-align:center;padding:4px 0;opacity:0;transition:opacity .3s;}
+.tt-menu-flash.show{opacity:1;}
+/* ── INTERNAL USE NOTICE (removed from welcome; kept for reference) ── */
+/* ── USE CASE EXPLAINER ── */
+.tt-uc-explain{display:flex;gap:14px;align-items:flex-start;background:#e8f3f5;border:1.5px solid #b8dfe6;border-radius:12px;padding:16px 20px;margin-bottom:28px;}
+.tt-uc-explain div:last-child{font-size:12.5px;color:var(--shell-ink);line-height:1.6;font-family:var(--font-ui);}
+.tt-uc-explain strong{color:var(--shell);display:block;margin-bottom:4px;}
+/* ── 9-STEP CANVAS GRID ── */
+.tt-canvas-section{margin-bottom:28px;}
+.tt-canvas-title{font-size:17px;font-weight:700;color:var(--shell);margin-bottom:4px;font-family:var(--font-ui);}
+.tt-canvas-sub{font-size:12px;color:var(--shell-mute);margin-bottom:14px;font-family:var(--font-ui);}
+.tt-canvas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.tt-cs-card{background:#fff;border:1.5px solid var(--shell-line);border-radius:10px;padding:13px 14px;border-left:3px solid var(--cc,var(--shell));transition:box-shadow .15s;}
+.tt-cs-card:hover{box-shadow:0 2px 10px rgba(14,31,56,.08);border-color:var(--shell-accent);}
+.tt-cs-top{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.tt-cs-num{width:22px;height:22px;border-radius:50%;background:var(--cc,var(--shell));color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:var(--font-mono);}
+.tt-cs-phase{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.04em;}
+.tt-cs-name{font-size:13px;font-weight:700;color:var(--shell);margin-bottom:4px;font-family:var(--font-ui);}
+.tt-cs-desc{font-size:11px;color:var(--shell-mute);line-height:1.5;font-family:var(--font-ui);}
+.tt-cs-owner{font-size:10px;font-weight:600;color:#8fa8be;margin-top:6px;font-family:var(--font-ui);}
+@media(max-width:900px){
+  .tt-canvas-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:600px){
+  .tt-canvas-grid{grid-template-columns:1fr;}
+  .tt-stage-cards{grid-template-columns:1fr;}
+}
+/* ── WELCOME SCREEN ── */
+.tt-welcome{flex:1;overflow-y:auto;padding:48px 32px 80px;background:var(--shell-bg);}
+.tt-welcome-wrap{max-width:1000px;margin:0 auto;}
+.tt-welcome-hero{text-align:center;margin-bottom:36px;}
+.tt-welcome-hero h1{font-size:28px;font-weight:700;color:var(--shell);margin-bottom:10px;font-family:var(--font-ui);}
+.tt-welcome-hero p{font-size:14.5px;color:var(--shell-mute);max-width:680px;margin:0 auto;line-height:1.6;font-family:var(--font-ui);}
+.tt-stage-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;}
+.tt-stage-card{background:#fff;border:1px solid var(--shell-line);border-radius:12px;padding:22px 20px;position:relative;display:flex;flex-direction:column;gap:10px;}
+.tt-stage-card-connector{position:absolute;top:36px;right:-16px;width:16px;height:2px;background:var(--shell-line);z-index:1;}
+.tt-stage-card:last-child .tt-stage-card-connector{display:none;}
+.tt-sc-head{display:flex;align-items:center;justify-content:space-between;}
+.tt-sc-num{width:30px;height:30px;border-radius:50%;background:var(--shell);color:#fff;font-family:var(--font-mono);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tt-sc-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--shell-accent-d);}
+.tt-stage-card h3{font-size:17px;font-weight:700;color:var(--shell);font-family:var(--font-ui);}
+.tt-stage-card p{font-size:12.5px;color:var(--shell-mute);line-height:1.55;font-family:var(--font-ui);flex:1;}
+.tt-sc-output{font-size:11.5px;color:var(--shell-ink);background:var(--shell-bg);border-radius:7px;padding:9px 11px;line-height:1.5;font-family:var(--font-ui);}
+.tt-sc-output strong{color:var(--shell);}
+.tt-welcome-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:stretch;margin-bottom:32px;}
+.tt-eng-input{width:100%;height:100%;border:1px solid var(--shell-line);border-radius:7px;padding:11px 13px;font-size:14px;background:#fff;color:var(--shell-ink);font-family:var(--font-ui);grid-column:1/3;box-sizing:border-box;}
+.tt-eng-input:focus{outline:none;border-color:var(--shell-accent);}
+.tt-start-btn{background:var(--shell-accent);border:none;color:#fff;padding:12px 0;border-radius:7px;font-size:14px;font-weight:600;cursor:pointer;width:100%;height:100%;font-family:var(--font-ui);transition:background .15s;grid-column:3/4;}
+.tt-start-btn:hover{background:var(--shell-accent-d);}
+/* ── STAGE NAV ── */
+.tt-stagenav{background:#fff;border-bottom:1px solid var(--shell-line);display:flex;flex-shrink:0;}
+.tt-stage-tab{background:none;border:none;border-bottom:3px solid transparent;padding:14px 28px 12px;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;color:var(--shell-mute);cursor:pointer;flex:1;transition:all .15s;font-family:var(--font-ui);}
+.tt-stage-tab:hover{color:var(--shell-ink);}
+.tt-stage-tab.active{color:var(--shell);border-bottom-color:var(--shell-accent);}
+.tt-stage-tab.complete .tt-sn::after{content:'✓';font-size:10px;}
+.tt-stage-tab.complete .tt-sn span{display:none;}
+.tt-sn{font-family:var(--font-mono);font-size:11px;font-weight:600;width:22px;height:22px;border-radius:50%;background:var(--shell-bg);color:var(--shell-mute);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.tt-stage-tab.active .tt-sn{background:var(--shell-accent);color:#fff;}
+.tt-stage-tab.complete .tt-sn{background:var(--shell-ok);color:#fff;}
+/* .tt-sl-main / .tt-sl-sub are spans in the markup, so they need an explicit
+   block display or the label and its sub-label run together on one line. */
+.tt-sl{text-align:left;display:flex;flex-direction:column;}
+.tt-sl-main{display:block;font-size:13px;font-weight:600;line-height:1.2;}
+.tt-sl-sub{display:block;font-size:10.5px;color:var(--shell-mute);margin-top:1px;line-height:1.2;}
+.tt-stage-tab.active .tt-sl-sub{color:var(--shell-accent-d);}

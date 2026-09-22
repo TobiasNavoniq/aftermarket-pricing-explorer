@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aftermarket Pricing Explorer, an internal diagnostic of the aftermarket pricing process.">
+<title>ThinkTrooper: RFP &amp; Pricing Process Analyzer</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<!-- TEMPLATE, NOT A RUNNABLE PAGE.
+     tools/build.py inlines these stylesheets, the JS modules, the content JSON
+     and the logo into one standalone file in dist/. Opening this file directly
+     shows a "this file was not built" notice.
+     Stylesheets load in cascade order; add a new one here AND in
+     tools/build.py -> CSS_FILES, in the same position. -->
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/matrix.css">
+<link rel="stylesheet" href="css/explainer.css">
+<link rel="stylesheet" href="css/heatmap.css">
+<link rel="stylesheet" href="css/roadmap.css">
+<link rel="stylesheet" href="css/report.css">
+</head>
+<body>
+
+<!-- ============================================================
+     TOP NAVIGATION
+     ============================================================ -->
+<div class="tt-nav" id="ttNav">
+  <div class="tt-nav-left">
+    <div class="tt-nav-logo">
+      <img src="assets/logo.png" alt="ThinkTrooper">
+      <div class="tt-nav-wm">
+        <div class="tt-nav-wm-a">THINKTROOPER</div>
+        <div class="tt-nav-wm-b">Advisory Automation</div>
+      </div>
+    </div>
+    <div class="tt-nav-div"></div>
+    <div class="tt-nav-tb">
+      <div class="tt-nav-title">RFP &amp; Process Analyzer</div>
+      <div class="tt-nav-byline">Internal &middot; Aftermarket Pricing &middot; 9-Step Canvas</div>
+    </div>
+  </div>
+  <div class="tt-nav-right">
+    <div class="tt-eng-name empty" id="ttEngDisplay">No engagement</div>
+    <button class="tt-menu-btn" id="ttHelpBtn" title="How to use this tool, and where your data is stored">? How to use</button>
+    <div class="tt-menu-wrap">
+      <button class="tt-menu-btn" id="ttMenuBtn">&#9776; Session</button>
+      <div class="tt-menu" id="ttMenu">
+        <button class="tt-menu-item" id="ttNewEng">+ New engagement</button>
+        <button class="tt-menu-item tt-load-wrap">
+          Load .json<input type="file" accept=".json" id="ttLoadFile">
+        </button>
+        <button class="tt-menu-item" id="ttSaveEng">Export .json</button>
+        <div class="tt-menu-flash" id="ttMenuFlash">Saved &#10003;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     WELCOME SCREEN (swapped out by shell.js -> startAnalysis)
+     ============================================================ -->
+<div class="tt-welcome" id="ttWelcome">
+  <div class="tt-welcome-wrap">
+
+    <div class="tt-welcome-hero">
+      <h1>RFP &amp; Pricing Process Analyzer</h1>
+      <p>An internal tool for analysing an OEM&apos;s aftermarket pricing process and RFP. Work through the 9-step pricing canvas, mark which challenges the OEM&apos;s RFP or process points to, and generate a pain heat map and a prioritised discussion roadmap, all for your own preparation and not for the OEM to see.</p>
+    </div>
+
+    <div class="tt-stage-cards">
+      <div class="tt-stage-card">
+        <div class="tt-stage-card-connector"></div>
+        <div class="tt-sc-head">
+          <div class="tt-sc-num">1</div>
+          <div class="tt-sc-badge">Map the RFP to the canvas</div>
+        </div>
+        <h3>Process Matrix</h3>
+        <p>Walk through the 9 steps of the pricing process. For each step the OEM&apos;s RFP touches, open the challenge library and mark the challenges that match what the RFP is actually asking for, across Foundational, Integrated, and Advanced tiers.</p>
+        <div class="tt-sc-output"><strong>Output:</strong> a complete set of marked challenges by process step and capability tier, reflecting what this OEM&apos;s RFP is pointing at.</div>
+      </div>
+      <div class="tt-stage-card">
+        <div class="tt-stage-card-connector"></div>
+        <div class="tt-sc-head">
+          <div class="tt-sc-num">2</div>
+          <div class="tt-sc-badge">See where it concentrates</div>
+        </div>
+        <h3>Pain Heat Map</h3>
+        <p>Instantly generated from your selections. Shows where the OEM&apos;s pricing requirements concentrate, by process step (where in the flow) and by tier (how advanced the capability gap is). Darker cells mean more requirements marked.</p>
+        <div class="tt-sc-output"><strong>Output:</strong> a visual of where this OEM&apos;s RFP concentrates, to help you prioritise your response.</div>
+      </div>
+      <div class="tt-stage-card">
+        <div class="tt-sc-head">
+          <div class="tt-sc-num">3</div>
+          <div class="tt-sc-badge">Sequence your response</div>
+        </div>
+        <h3>Priority Roadmap</h3>
+        <p>All marked challenges sequenced into a Diagnose &rarr; Transform &rarr; Execute model. Ordered so foundational data and steering capabilities land before operational execution. Includes technology recommendations to reference in your response.</p>
+        <div class="tt-sc-output"><strong>Output:</strong> a prioritised internal roadmap, exportable as a PDF for your own reference or RFP-response prep.</div>
+      </div>
+    </div>
+
+    <div class="tt-welcome-actions">
+      <input type="text" class="tt-eng-input" id="ttWelcomeEng" placeholder="OEM / account name, e.g. McLaren Aftermarket RFP 2025">
+      <button class="tt-start-btn" id="ttStartBtn">Start analysis &rarr;</button>
+    </div>
+
+    <div class="tt-canvas-section">
+      <div class="tt-canvas-title">The 9-step canvas</div>
+      <div class="tt-canvas-sub">The same framework used in the RFP Reader, validated against 6 OEM source documents</div>
+      <!-- Rendered by shell.js from content/taxonomy.json -->
+      <div class="tt-canvas-grid" id="ttCanvasGrid"></div>
+    </div>
+
+    <div class="tt-uc-explain">
+      <div>
+        <strong>What are the "reference use cases" (U01, U02&hellip;) inside each step?</strong>
+        These are internal process reference codes. Each one describes a concrete product capability: the actors involved, what triggers it, and what it produces. When you open a step in the matrix, the use cases listed show you which capabilities are relevant to that step, so you can judge how well the product covers what the OEM is asking for.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================
+     ANALYSIS APP (hidden until an engagement is started)
+     ============================================================ -->
+<div id="ttAppBody" style="display:none;">
+
+  <div class="tt-stagenav">
+    <button class="tt-stage-tab active" data-tab="matrix">
+      <span class="tt-sn"><span>1</span></span>
+      <span class="tt-sl"><span class="tt-sl-main">Process Matrix</span><span class="tt-sl-sub">Mark challenges</span></span>
+    </button>
+    <button class="tt-stage-tab" data-tab="heatmap">
+      <span class="tt-sn"><span>2</span></span>
+      <span class="tt-sl"><span class="tt-sl-main">Pain Heat Map</span><span class="tt-sl-sub">See the pattern</span></span>
+    </button>
+    <button class="tt-stage-tab" data-tab="roadmap">
+      <span class="tt-sn"><span>3</span></span>
+      <span class="tt-sl"><span class="tt-sl-main">Priority Roadmap</span><span class="tt-sl-sub">Sequence the work</span></span>
+    </button>
+  </div>
+
+  <main>
+    <div class="wrap">
+
+      <!-- ---- Stage 1: Process Matrix ---- -->
+      <section class="panel active" id="panel-matrix">
+        <div class="toolbar">
+          <button class="btn" id="saveFileBtn" title="Download a .json session file"><svg viewBox="0 0 24 24" class="bi"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Save session</button>
+          <button class="btn" id="loadFileBtn" title="Load a previously saved .json session"><svg viewBox="0 0 24 24" class="bi"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Load session</button>
+          <input type="file" id="loadFileInput" accept="application/json,.json" style="display:none">
+          <span class="spacer"></span>
+          <button class="btn danger" id="resetBtn">Reset all selections</button>
+        </div>
+
+        <div class="legend-bar">
+          <span class="lab">Logic layer</span>
+          <span class="legend-item"><span class="dot D"></span>Data / Modelling / Optimisation</span>
+          <span class="legend-item"><span class="dot S"></span>Steering / Management / Monitoring</span>
+          <span class="legend-item"><span class="dot O"></span>Operational Processing / Integration</span>
+          <span class="spacer"></span>
+          <span class="counter"><b id="liveCount">0</b> challenges marked applicable</span>
+        </div>
+
+        <p class="hint"><strong>How to use this matrix:</strong> for each of the 9 steps below, click the <strong>cell</strong> to read what &ldquo;good&rdquo; looks like and which capabilities (use cases) apply. If the OEM&apos;s RFP or process touches this step, tick the specific challenges inside the panel that match what the RFP is asking for. No separate step needed. This builds the picture used in the Heat Map and the Roadmap.</p>
+
+        <div id="matrix"></div>
+        <div id="explainer" class="explainer"></div>
+      </section>
+
+      <!-- ---- Stage 2: Pain Heat Map ---- -->
+      <section class="panel" id="panel-heatmap">
+        <div class="actions">
+          <button class="btn ghost" id="toExploreBtn">&lsaquo; Back to matrix</button>
+        </div>
+        <h2 class="section-title">Requirement concentration across the 9-step process &times; 3 tiers</h2>
+        <p class="section-sub">Each cell shows how many applicable challenges were marked, shaded by intensity. This is your internal picture of where this OEM&apos;s RFP or process requirements concentrate, by process step (where in the flow) and by tier (how advanced the capability gap is).</p>
+        <div id="heatmap"></div>
+        <div id="hmEmpty"></div>
+      </section>
+
+      <!-- ---- Stage 3: Priority Roadmap ---- -->
+      <section class="panel" id="panel-roadmap">
+        <div class="actions">
+          <h2 class="section-title" style="margin:0">Priority roadmap by pricing phase</h2>
+          <div class="spacer" style="flex:1"></div>
+          <button class="btn primary" id="pdfBtn"><svg viewBox="0 0 24 24" class="bi"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Export PDF report</button>
+        </div>
+        <p class="section-sub">The marked challenges laid out across the five pricing phases, in the same order and the same colours as the band above the matrix. Click a <strong>phase</strong> for everything marked inside it, or a single <strong>challenge</strong> for its detail. Use this to prioritise your RFP response or internal discussion.</p>
+        <div class="prio-summary" id="prioSummary"></div>
+        <div class="road" id="roadmap"></div>
+        <div id="roadDetail" class="road-detail"></div>
+        <div id="roadEmpty"></div>
+        <div id="techIntegration"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="foot">
+    <b>ThinkTrooper</b> &middot; RFP &amp; Pricing Process Analyzer <span id="verStamp"></span>
+  </div>
+
+</div><!-- /#ttAppBody -->
+
+<!-- ============================================================
+     HELP PANEL
+     ============================================================ -->
+<div class="overlay" id="helpOverlay"></div>
+<aside class="help-panel" id="helpPanel" role="dialog" aria-label="How to use">
+  <div class="help-head">
+    <div class="help-title">How to use this tool</div>
+    <button class="ex-close" id="helpClose" aria-label="Close">&times;</button>
+  </div>
+  <div class="help-body">
+    <p class="help-lead">This is an internal tool for analysing an OEM&apos;s aftermarket pricing process or incoming RFP. It is never shown to the OEM. It maps the pricing process across 9 steps, 5 canvas phases and 3 capability tiers, and helps you mark which challenges the OEM&apos;s RFP or process points to, then turns that into a heat map and a prioritised roadmap for your own use.</p>
+
+    <div class="help-sec">Getting started</div>
+    <ol class="help-list">
+      <li>Type the OEM or account name on the welcome screen so your work is labelled.</li>
+      <li>On the <b>Process Matrix</b>, click any cell to read the best-practice workflow, personas and reference use cases for that step.</li>
+      <li>If the OEM&apos;s RFP or process touches this step, scroll down inside the panel and tick the challenges that match what the RFP is asking for, directly there, with no separate step.</li>
+      <li>Open <b>Pain Heat Map</b> to see where the OEM&apos;s requirements concentrate, and <b>Priority Roadmap</b> for a Diagnose &rarr; Transform &rarr; Execute sequence plus technical recommendations.</li>
+    </ol>
+
+    <div class="help-sec">What are the reference use cases?</div>
+    <p class="help-p">The codes like U01, U02 shown inside each step are internal process reference codes. Each one describes a concrete product capability: the actors involved, what triggers it, and what it produces. Use them to judge how well the product covers what the OEM is asking for at that step.</p>
+
+    <div class="help-sec">Saving &amp; sharing your work</div>
+    <ul class="help-list">
+      <li><b>Auto-save:</b> as you work, your selections are kept in this browser on this device. Reopening the file restores them.</li>
+      <li><b>Save session:</b> use <b>Save session</b> on the Process Matrix tab, or <b>Export .json</b> in the Session menu, to download a small <code>.json</code> file. This is the reliable way to keep a copy, move it to another machine, or send it to a colleague.</li>
+      <li><b>Load session:</b> use <b>Load session</b> to open a previously saved <code>.json</code> file.</li>
+      <li><b>Export PDF report:</b> produces a printable summary (heat map, marked challenges, roadmap and recommendations) for internal use or RFP-response preparation. Enable <b>Background graphics</b> in the print dialog, or the shading prints white.</li>
+      <li><b>New engagement:</b> clears everything and the saved session, for a clean start with a new OEM.</li>
+    </ul>
+
+    <div class="help-sec">Where your data goes</div>
+    <p class="help-p">Everything runs locally in your browser. Nothing you type or tick is sent to any server: the file has no backend and no tracking. Auto-save uses your browser&apos;s local storage; if that is unavailable (for example in private-browsing mode or when opened from some email attachments), the tool still works but will not auto-restore. Use <b>Save session</b> to keep your work.</p>
+
+    <div class="help-sec">Tips</div>
+    <ul class="help-list">
+      <li>The distributed build is a single self-contained file. You can email it internally, put it on a shared drive, or open it by double-clicking. No install and no server needed.</li>
+      <li>Best viewed in a current version of Chrome, Edge, Firefox or Safari.</li>
+      <li>For a clean PDF, use the browser print dialog&apos;s &ldquo;Save as PDF&rdquo; with default A4 margins.</li>
+    </ul>
+  </div>
+  <div class="help-foot">
+    <span class="help-ver" id="helpVer"></span>
+    <button class="btn primary" id="helpCloseBtn">Got it</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast"></div>
+<div id="reportMount" class="report-mount"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

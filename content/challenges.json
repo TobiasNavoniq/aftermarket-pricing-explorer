@@ -1,0 +1,675 @@
+[
+  {
+    "id": "C101",
+    "step": "s1",
+    "t": "No structured segmentation framework",
+    "d": "Parts are not consistently grouped into families, product lines or clusters, so pricing rules cannot be applied at scale.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C102",
+    "step": "s1",
+    "t": "Value and volume segments not separated",
+    "d": "There is no distinction between value-capture parts and high-volume cost-driven parts, so willingness to pay is left unrealised.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C103",
+    "step": "s1",
+    "t": "No clear reference-price framework",
+    "d": "List, floor, target and peer reference points are undefined per segment, so there is no benchmark to price against or alert on.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C104",
+    "step": "s1",
+    "t": "Weak governance and approval authority",
+    "d": "Approval thresholds, dual-control rules and role-based rights are informal or held in spreadsheets rather than systematised.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C105",
+    "step": "s1",
+    "t": "Gaps in the master-data hierarchy",
+    "d": "Product, customer, region and channel hierarchies are incomplete or inconsistent, undermining every downstream pricing rule.",
+    "layer": "D",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C106",
+    "step": "s1",
+    "t": "Volume tiers, pack sizes and MOQ unmanaged",
+    "d": "Quantity-based price tiers, units of measure, pack sizes and minimum order quantities are not held as structured, reusable rules.",
+    "layer": "O",
+    "tiers": [
+      "fnd"
+    ]
+  },
+  {
+    "id": "C107",
+    "step": "s1",
+    "t": "Strategy not translated into executable rules",
+    "d": "Commercial strategy lives in presentations rather than machine-executable pricing rules, so intent and execution drift apart.",
+    "layer": "S",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C108",
+    "step": "s1",
+    "t": "Customer group structures not supported",
+    "d": "Customers cannot be linked into parent and subsidiary structures, so the same buying group is priced inconsistently across its entities.",
+    "layer": "D",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C201",
+    "step": "s2",
+    "t": "New-part pricing is slow and manual",
+    "d": "New parts wait in a queue for classification and a first price, delaying availability and leaving early revenue uncaptured.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C202",
+    "step": "s2",
+    "t": "No automated first-price proposal",
+    "d": "The system cannot propose a price from rules, cost and market signals when some inputs are missing, so every new price is built by hand.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C203",
+    "step": "s2",
+    "t": "Multiple pricing methods cannot coexist",
+    "d": "Cost-plus, mark-up, fixed-price, recommended-retail-minus and value-based methods cannot run together and be prioritised per cluster or channel.",
+    "layer": "D",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C204",
+    "step": "s2",
+    "t": "Predecessor and linked-part chains break",
+    "d": "Replacement and linked-part relationships are not maintained, so price carry-over and consistency for related parts is unreliable.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C205",
+    "step": "s2",
+    "t": "Bulk price loading is fragile",
+    "d": "Large initial-price loads lack validation, a profit-impact preview and a rollback path, making mass uploads risky.",
+    "layer": "O",
+    "tiers": [
+      "fnd"
+    ]
+  },
+  {
+    "id": "C206",
+    "step": "s2",
+    "t": "No margin simulation on new parts",
+    "d": "The margin and volume impact of a first price cannot be simulated before it is approved and stored.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C207",
+    "step": "s2",
+    "t": "Missing inputs stall the calculation",
+    "d": "When a cost or other input is missing, the engine stops instead of bridging the gap to still propose a defensible price.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C208",
+    "step": "s2",
+    "t": "No margin-scoring or target-margin model",
+    "d": "There is no model that translates internal and external drivers into a target margin per product line, nor a way to visualise the resulting margin curve.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C209",
+    "step": "s2",
+    "t": "No correction for extreme-cost parts",
+    "d": "The target margin cannot be adjusted for very high or very low-cost parts, distorting price points at the extremes of the range.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C210",
+    "step": "s2",
+    "t": "Item-level value-based pricing unsupported",
+    "d": "Value parts cannot be priced item by item from value attributes off a reference point, so value capture stays coarse and generic.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C211",
+    "step": "s2",
+    "t": "Bundle and kit pricing not built in",
+    "d": "Kit, bundle and assembly prices cannot be calculated bottom-up from the latest component prices inside the tool.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C301",
+    "step": "s3",
+    "t": "Slow response to cost movement",
+    "d": "When input or production cost moves, repricing is manual and lagging, eroding margin until someone notices.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C302",
+    "step": "s3",
+    "t": "Differentiated increases are clumsy",
+    "d": "Applying a scoped, differentiated percentage or absolute increase across families and segments with impact simulation is manual and error-prone.",
+    "layer": "D",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C303",
+    "step": "s3",
+    "t": "No pre-release scenario simulation",
+    "d": "The price, revenue and margin impact of a central adjustment cannot be simulated and saved before it is activated, so changes ship blind.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C304",
+    "step": "s3",
+    "t": "Surcharges and tariffs handled off-system",
+    "d": "Component surcharges and import or export tariff elements cannot be tracked at component level and reflected into the central price build-up.",
+    "layer": "O",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C305",
+    "step": "s3",
+    "t": "Pricing anomalies not detected",
+    "d": "Inconsistencies such as variant or attribute mismatches are not flagged automatically during adjustment, so errors slip through.",
+    "layer": "S",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C306",
+    "step": "s3",
+    "t": "Reporting does not point to action",
+    "d": "Margin and volume reporting does not surface where central pricing action is needed, so adjustments stay reactive.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C307",
+    "step": "s3",
+    "t": "Channel cost and price moves not linked",
+    "d": "Cost and price changes in one supply channel do not propagate to the related service channel, breaking price relationships.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C308",
+    "step": "s3",
+    "t": "No cross-channel competitive comparison",
+    "d": "Service-channel prices cannot be compared against independent-channel levels per part or customer to position competitively.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C401",
+    "step": "s4",
+    "t": "Handover is manual and opaque",
+    "d": "Releasing approved central prices and structures to markets is a manual transfer with no shared status or trail.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C402",
+    "step": "s4",
+    "t": "Markets receive no worklist",
+    "d": "Markets do not automatically receive a list of what changed and what needs local processing.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C403",
+    "step": "s4",
+    "t": "Governance parameters do not travel",
+    "d": "Corridors, rules and approval limits do not flow with the price to the market level, so local steering loses its guardrails.",
+    "layer": "S",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C404",
+    "step": "s4",
+    "t": "HQ and markets on disconnected systems",
+    "d": "Headquarters and market levels run on separate pricing systems with no shared logic or data transparency.",
+    "layer": "S",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C501",
+    "step": "s5",
+    "t": "Market price derivation is manual",
+    "d": "Local price derivation from the central price and a market factor is not calculated automatically from rules and scoring.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C502",
+    "step": "s5",
+    "t": "Weak exchange-rate handling",
+    "d": "Revisable rates and threshold-triggered recalculation when a rate move crosses a boundary are not handled cleanly.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C503",
+    "step": "s5",
+    "t": "Price corridors and guardrails missing",
+    "d": "Upper and lower factor corridors per segment, market or competition are not enforced, so local prices drift outside policy.",
+    "layer": "S",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C504",
+    "step": "s5",
+    "t": "Local change caps unmanaged",
+    "d": "Market-specific limits on percentage price change, with lower and upper bounds per product line and customer, are applied inconsistently.",
+    "layer": "O",
+    "tiers": [
+      "fnd"
+    ]
+  },
+  {
+    "id": "C505",
+    "step": "s5",
+    "t": "Local prices not checked against the market",
+    "d": "Market list prices are not checked for consistency against observed competitive price levels in the same market.",
+    "layer": "S",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C506",
+    "step": "s5",
+    "t": "Local margin impact not simulated",
+    "d": "Markets cannot simulate the local margin impact of a derived price before preparing it for approval.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C507",
+    "step": "s5",
+    "t": "Dealer-discount structures not modelled",
+    "d": "Dealer prices off the market list price via multi-dimension discount structures are maintained by hand and drift quickly.",
+    "layer": "D",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C601",
+    "step": "s6",
+    "t": "Impact not visible before approval",
+    "d": "The margin and revenue impact of a local price change is not shown to the approver, so decisions are made without the number.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C602",
+    "step": "s6",
+    "t": "Approval workflow not systematised",
+    "d": "Local price-change approval and rationale capture runs on email and spreadsheets rather than a tracked, conditional workflow.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C603",
+    "step": "s6",
+    "t": "Margin-floor breaches go unnoticed",
+    "d": "Local prices that fall below minimum-margin thresholds are not flagged automatically for corrective action.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C604",
+    "step": "s6",
+    "t": "Manual overrides not tracked",
+    "d": "Manually overridden local prices are not tracked, reviewed or automatically reverted when their validity expires.",
+    "layer": "S",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C605",
+    "step": "s6",
+    "t": "No target-seeking simulation",
+    "d": "Markets cannot iteratively simulate an increase to reach a margin or revenue target, with suggested moves to get there.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C606",
+    "step": "s6",
+    "t": "Weak local performance analysis",
+    "d": "Local margin and volume performance cannot be analysed per segment or customer to shortlist the next pricing actions.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C607",
+    "step": "s6",
+    "t": "Escalating discount limits not enforced",
+    "d": "Tiered discount-approval bands are not enforced, so concessions routinely exceed the granter's authority.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C701",
+    "step": "s7",
+    "t": "Campaign pricing is uncontrolled",
+    "d": "Temporary prices lack scoped validity, minimum-margin checks and automatic revert once the campaign ends.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C702",
+    "step": "s7",
+    "t": "Special and regional price requests are clumsy",
+    "d": "Distributor, importer and key-account price lists and regional requests are hard to capture and maintain with eligibility control.",
+    "layer": "O",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C703",
+    "step": "s7",
+    "t": "Campaign effectiveness is blind",
+    "d": "The uplift effect of promotions is not measured, so spend on slow-moving and seasonal campaigns is not optimised.",
+    "layer": "D",
+    "tiers": [
+      "adv"
+    ]
+  },
+  {
+    "id": "C704",
+    "step": "s7",
+    "t": "Discount and rebate logic is fragmented",
+    "d": "Discount and rebate models are not defined flexibly per segment or customer, so true net realisation is opaque.",
+    "layer": "D",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C705",
+    "step": "s7",
+    "t": "Agreements and bonuses not governed",
+    "d": "Customer-specific discounts, dealer bonuses and target agreements are not managed as governed commercial conditions.",
+    "layer": "S",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C706",
+    "step": "s7",
+    "t": "Long-term agreements not simulated",
+    "d": "Long-term agreement scenarios that respect cost development and volume commitments cannot be modelled before signing.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C707",
+    "step": "s7",
+    "t": "Contract obligation alerts missing",
+    "d": "There is no alerting before supply obligations or contract end dates lapse, risking compliance and supply gaps.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C708",
+    "step": "s7",
+    "t": "Bid and quotation process not supported",
+    "d": "Bids cannot be monitored or informed by past bid history, so new quotations repeat earlier pricing mistakes.",
+    "layer": "S",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C801",
+    "step": "s8",
+    "t": "Publication to core systems is fragile",
+    "d": "Approved prices are not reliably published to ERP, logistics, product-information and invoicing systems with validated timing.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C802",
+    "step": "s8",
+    "t": "Distribution to channels is limited",
+    "d": "Prices cannot be distributed flexibly (full or delta lists, interfaces, future-dated) to every consuming system and customer format.",
+    "layer": "O",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C803",
+    "step": "s8",
+    "t": "Timing and communication are entangled",
+    "d": "There is no clean separation of approval date, communication date and system-activation date for a price change.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C804",
+    "step": "s8",
+    "t": "No confirmation of receipt",
+    "d": "Distributed prices are not confirmed as received and consistent by downstream systems, risking silent gaps.",
+    "layer": "O",
+    "tiers": [
+      "fnd"
+    ]
+  },
+  {
+    "id": "C805",
+    "step": "s8",
+    "t": "Cross-market price differences untracked",
+    "d": "Differences for the same part across markets and channels, and validity-date mismatches between systems, are not surfaced.",
+    "layer": "O",
+    "tiers": [
+      "int"
+    ]
+  },
+  {
+    "id": "C901",
+    "step": "s9",
+    "t": "Weak audit trail and history",
+    "d": "The who, what, when and why of each price change is not fully logged with a unique reference and retained for the required period.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C902",
+    "step": "s9",
+    "t": "No end-to-end traceability",
+    "d": "A price point cannot be traced back to the rule, driver, cost and approval that produced it.",
+    "layer": "S",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  },
+  {
+    "id": "C903",
+    "step": "s9",
+    "t": "Compliance and duty-separation gaps",
+    "d": "Role separation, the authorisation hierarchy and documented approvals do not meet audit or regulatory requirements.",
+    "layer": "S",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C904",
+    "step": "s9",
+    "t": "Retention and deletion not enforced",
+    "d": "Data retention and deletion obligations, including data-subject requests, are not enforced systematically.",
+    "layer": "O",
+    "tiers": [
+      "int",
+      "fnd"
+    ]
+  },
+  {
+    "id": "C905",
+    "step": "s9",
+    "t": "Compliance reporting is manual",
+    "d": "Audit, compliance and price-health reporting is assembled by hand rather than generated from the pricing record itself.",
+    "layer": "D",
+    "tiers": [
+      "adv",
+      "int"
+    ]
+  }
+]

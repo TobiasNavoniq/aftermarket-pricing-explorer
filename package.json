@@ -1,0 +1,17 @@
+{
+  "name": "aftermarket-pricing-explorer",
+  "version": "0.4.0",
+  "private": true,
+  "description": "ThinkTrooper RFP & Pricing Process Analyzer, an internal aftermarket pricing diagnostic.",
+  "type": "module",
+  "scripts": {
+    "build": "python tools/build.py",
+    "open": "python tools/build.py --open",
+    "check": "python tools/build.py --check",
+    "test": "node tests/smoke.mjs",
+    "test:pdf": "python tools/pdfcheck.py"
+  },
+  "devDependencies": {
+    "jsdom": "^26.0.0"
+  }
+}

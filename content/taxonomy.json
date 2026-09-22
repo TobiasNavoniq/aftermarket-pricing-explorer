@@ -1,0 +1,285 @@
+{
+  "tiers": [
+    {
+      "id": "adv",
+      "name": "Advanced Optimisation",
+      "sub": "Pricing AI & Analytics"
+    },
+    {
+      "id": "int",
+      "name": "Integrated Management",
+      "sub": "Business Management"
+    },
+    {
+      "id": "fnd",
+      "name": "Foundational Operations",
+      "sub": "Pricing Officers"
+    }
+  ],
+  "layers": {
+    "D": {
+      "label": "Data / Modelling / Optimisation",
+      "short": "Data",
+      "color": "#2F7FA6"
+    },
+    "S": {
+      "label": "Steering / Management / Monitoring",
+      "short": "Steer",
+      "color": "#3F8F5B"
+    },
+    "O": {
+      "label": "Operational Processing / Integration",
+      "short": "Ops",
+      "color": "#C98A1B"
+    }
+  },
+  "canvas": [
+    {
+      "id": "strategy",
+      "name": "Price Strategy",
+      "sub": "Strategic Pricing",
+      "color": "#003B5C",
+      "tint": "#E8F0F8"
+    },
+    {
+      "id": "setting",
+      "name": "Price Setting",
+      "sub": "Product Pricing",
+      "color": "#0A4D63",
+      "tint": "#E8F3EE"
+    },
+    {
+      "id": "steering",
+      "name": "Price Steering",
+      "sub": "Segment Pricing",
+      "color": "#0E5E6E",
+      "tint": "#F0EAF8"
+    },
+    {
+      "id": "execution",
+      "name": "Price Execution",
+      "sub": "Customer Pricing",
+      "color": "#13707A",
+      "tint": "#FEF3E2"
+    },
+    {
+      "id": "transactions",
+      "name": "Price Transactions",
+      "sub": "Incentive Pricing",
+      "color": "#178391",
+      "tint": "#FCE8E8"
+    }
+  ],
+  "owners": {
+    "hq": {
+      "label": "HQ",
+      "full": "Headquarters",
+      "color": "#003B5C"
+    },
+    "ctry": {
+      "label": "Markets",
+      "full": "Market / regional organisations",
+      "color": "#3F8F5B"
+    },
+    "both": {
+      "label": "HQ + Markets",
+      "full": "Shared HQ & Market",
+      "color": "#7A6A2F"
+    }
+  },
+  "steps": [
+    {
+      "id": "s1",
+      "n": "1",
+      "name": "Price Structure Definition",
+      "canvas": "strategy",
+      "owner": "hq",
+      "ucs": [
+        "U01",
+        "U02",
+        "U03"
+      ],
+      "blurb": "Segmentation, master-data hierarchy, reference price framework, approval governance."
+    },
+    {
+      "id": "s2",
+      "n": "2",
+      "name": "Initial Price Creation",
+      "canvas": "setting",
+      "owner": "hq",
+      "ucs": [
+        "U04",
+        "U05",
+        "U06",
+        "U21"
+      ],
+      "blurb": "New-part pricing, cost-plus / mark-up methods, bulk loads, replacements, bundles."
+    },
+    {
+      "id": "s3",
+      "n": "3",
+      "name": "Central Price Adjustments",
+      "canvas": "setting",
+      "owner": "hq",
+      "ucs": [
+        "U07",
+        "U08",
+        "U22"
+      ],
+      "blurb": "Cost-triggered repricing, surcharges, tariffs, FX threshold recalculation, channel linkage."
+    },
+    {
+      "id": "s4",
+      "n": "4",
+      "name": "HQ → Market Handover",
+      "canvas": "steering",
+      "owner": "hq",
+      "ucs": [
+        "U09",
+        "U10"
+      ],
+      "blurb": "Releasing approved central prices to markets: controlled, transparent, confirmed receipt."
+    },
+    {
+      "id": "s5",
+      "n": "5",
+      "name": "Market Price Derivation",
+      "canvas": "steering",
+      "owner": "ctry",
+      "ucs": [
+        "U11",
+        "U12",
+        "U13",
+        "U23"
+      ],
+      "blurb": "Local retail and dealer-net derivation, applying FX, markups, corridors, and local rules."
+    },
+    {
+      "id": "s6",
+      "n": "6",
+      "name": "Market Price Changes",
+      "canvas": "execution",
+      "owner": "ctry",
+      "ucs": [
+        "U14",
+        "U15"
+      ],
+      "blurb": "Targeted local adjustments, differentiated increases, simulation toward targets, approvals."
+    },
+    {
+      "id": "s7",
+      "n": "7",
+      "name": "Campaigns & Special Prices",
+      "canvas": "execution",
+      "owner": "ctry",
+      "ucs": [
+        "U16",
+        "U17",
+        "U24",
+        "U25"
+      ],
+      "blurb": "Promotional prices, key-account specials, distributor lists, dealer bonuses, agreements."
+    },
+    {
+      "id": "s8",
+      "n": "8",
+      "name": "Price Publication & Distribution",
+      "canvas": "transactions",
+      "owner": "both",
+      "ucs": [
+        "U18",
+        "U19"
+      ],
+      "blurb": "Publishing approved prices to ERP, logistics, invoicing: timing, receipt, consistency."
+    },
+    {
+      "id": "s9",
+      "n": "9",
+      "name": "Audit, History & Compliance",
+      "canvas": "transactions",
+      "owner": "both",
+      "ucs": [
+        "U20"
+      ],
+      "blurb": "Full traceability of every price change (who, what, when, why) with long-term retention."
+    }
+  ],
+  "roadmapPhases": [
+    {
+      "id": "diagnose",
+      "name": "Diagnose",
+      "blurb": "Establish the baseline: data hierarchy, segmentation, corridors, the margin model and the leakage map.",
+      "layers": [
+        "D"
+      ]
+    },
+    {
+      "id": "transform",
+      "name": "Transform",
+      "blurb": "Install steering: rules, KPIs, alerts, governance, agreements and the optimisation engine.",
+      "layers": [
+        "S"
+      ]
+    },
+    {
+      "id": "execute",
+      "name": "Execute",
+      "blurb": "Operationalise: derivation, approval, publication, rebates, bundles and the audit backbone.",
+      "layers": [
+        "O"
+      ]
+    }
+  ],
+  "personas": {
+    "strat": {
+      "name": "Pricing Strategy Lead",
+      "desc": "Owns the pricing operating model, segmentation and governance framework",
+      "color": "#003B5C"
+    },
+    "pm": {
+      "name": "Product / Portfolio Pricing Manager",
+      "desc": "Sets and maintains list and product prices across the portfolio",
+      "color": "#066B80"
+    },
+    "analyst": {
+      "name": "Pricing Analyst",
+      "desc": "Runs analysis, simulation, corridors and KPI monitoring",
+      "color": "#2F7FA6"
+    },
+    "market": {
+      "name": "Market / Regional Pricer",
+      "desc": "Derives local market, dealer and customer prices from central prices",
+      "color": "#3F8F5B"
+    },
+    "kam": {
+      "name": "Key Account / Sales Manager",
+      "desc": "Manages customer-specific deals, agreements and approvals",
+      "color": "#7A6A2F"
+    },
+    "controller": {
+      "name": "Controller / Finance",
+      "desc": "Guards margin floors, approves above-threshold moves, owns audit",
+      "color": "#8A4B2F"
+    },
+    "datasci": {
+      "name": "Data Science / Optimisation",
+      "desc": "Builds elasticity, value and margin models",
+      "color": "#5A3E85"
+    },
+    "ops": {
+      "name": "Pricing Operations / IT",
+      "desc": "Runs publication, distribution, integration and the data backbone",
+      "color": "#C98A1B"
+    },
+    "admin": {
+      "name": "System Admin / Key User",
+      "desc": "Maintains roles, master data, rules and configuration",
+      "color": "#5F6A72"
+    }
+  },
+  "tierLens": {
+    "adv": "At the Advanced Optimisation tier this step is model- and analytics-driven: the system scores, proposes, optimises and explains, and the expert validates.",
+    "int": "At the Integrated Management tier this step runs on governed rules, simulation and workflow: the everyday work of the pricing team.",
+    "fnd": "At the Foundational Operations tier this step is about reliable, high-volume execution and clean data upkeep by pricing officers."
+  }
+}

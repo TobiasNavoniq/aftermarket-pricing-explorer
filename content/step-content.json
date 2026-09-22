@@ -1,0 +1,154 @@
+{
+  "s1": {
+    "summary": "Define the foundation every downstream price inherits: the segmentation model, the master-data hierarchy, the reference-price framework and the governance that controls them.",
+    "steps": [
+      "Cluster the parts portfolio into families, product lines and value segments using cost, demand, competitive intensity and lifecycle signals.",
+      "Build the master-data hierarchy that every pricing rule depends on: product, customer (including group structures), region and channel.",
+      "Define the reference-price framework per segment (list, floor, target, peer) together with volume tiers, pack sizes and order minimums as reusable rules.",
+      "Codify the approval-authority matrix: who approves what, at which thresholds, under which control rules."
+    ],
+    "best": "Strong practice anchors the whole process in a repeatable segmentation and governance model, so most parts can be priced by rule and the central and market levels share one hierarchy, removing the disconnected-systems problem before it starts.",
+    "personas": [
+      "strat",
+      "admin",
+      "controller",
+      "datasci"
+    ],
+    "capability": "segmentation, master-data management, price-framework definition and approval governance."
+  },
+  "s2": {
+    "summary": "Create the first price for a part (new parts, single parts and bulk loads) using the right method, a margin model for value parts, and consistent bundle and replacement handling.",
+    "steps": [
+      "Assign each new part to its family, product line and segment, rule- or model-assisted, bridging any missing inputs.",
+      "Generate a first price via the right method: cost-plus, mark-up, fixed, recommended-retail-minus, or value-based via the margin model.",
+      "Maintain replacement and linked-part chains, and calculate bundles and kits bottom-up from current component prices.",
+      "Validate bulk loads with a profit-impact preview, simulate margin, then route for approval."
+    ],
+    "best": "Strong practice prices a new part end to end in seconds rather than days, proposing a defensible price even with missing data, driving value parts from a transparent margin curve, and keeping linked parts, replacements and bundles automatically consistent.",
+    "personas": [
+      "pm",
+      "analyst",
+      "datasci",
+      "ops"
+    ],
+    "capability": "rule- and value-based price setting, margin modelling, replacement and bundle logic, and validated mass maintenance."
+  },
+  "s3": {
+    "summary": "Adjust central prices for cost moves, surcharges and strategic decisions (differentiated increases, cost-driven repricing and channel linkage) before markets see them.",
+    "steps": [
+      "Monitor input and production cost changes and trigger repricing proposals automatically.",
+      "Apply scoped, differentiated absolute or percentage adjustments across families and segments with pre-release simulation.",
+      "Reflect component surcharges and tariff elements into the central price build-up.",
+      "Link related-channel cost and price changes, compare against independent-channel levels, and surface where action is needed."
+    ],
+    "best": "Strong practice closes the gap between a cost change and the price change to near zero through automated triggers, reflects surcharges and tariffs transparently, and keeps cross-channel price relationships visible, eliminating silent margin erosion.",
+    "personas": [
+      "pm",
+      "analyst",
+      "controller",
+      "datasci"
+    ],
+    "capability": "cost-change triggers, differentiated adjustment, surcharge and tariff handling, channel linkage and pre-release simulation."
+  },
+  "s4": {
+    "summary": "Hand the approved central price structure to the markets: release prices, carry the governance parameters across and generate the local worklists.",
+    "steps": [
+      "Release approved central prices and structures to the market level with a shared status and trail.",
+      "Carry corridors, rules and approval limits across so local steering keeps its guardrails.",
+      "Generate market worklists of what changed and what needs local processing.",
+      "Confirm markets have received and accepted the handover before local work begins."
+    ],
+    "best": "Strong practice makes the handover a controlled, transparent release: markets automatically receive a worklist and the governance travels with the price, instead of an opaque manual transfer between disconnected central and market systems.",
+    "personas": [
+      "pm",
+      "market",
+      "ops",
+      "admin"
+    ],
+    "capability": "price release, worklist generation and governed central-to-market distribution."
+  },
+  "s5": {
+    "summary": "Derive the local market price from the central price: factor scoring, exchange rates, corridors, change caps, competitive consistency and dealer-discount structures.",
+    "steps": [
+      "Calculate the market factor against the central price using a local scoring model of competitive and internal positioning.",
+      "Apply revisable exchange rates with threshold-triggered recalculation, local caps and rounding.",
+      "Enforce factor corridors and check local prices for consistency against observed competitive levels.",
+      "Derive dealer and customer prices via multi-dimension discount structures and simulate local margin before approval."
+    ],
+    "best": "Strong practice automates the full scoring-derivation-corridor chain and keeps every market price inside data-derived corridors and consistent with competitive levels, so local pricers manage exceptions rather than rebuilding prices by hand.",
+    "personas": [
+      "market",
+      "analyst",
+      "controller",
+      "datasci"
+    ],
+    "capability": "factor scoring, exchange-rate and cap engine, corridors, competitive consistency checks and dealer-discount structures."
+  },
+  "s6": {
+    "summary": "Run local price changes through impact preview, approval workflow, margin-floor checks, override tracking and tiered discount gates.",
+    "steps": [
+      "Show the margin and revenue impact of a local change to the approver before commitment.",
+      "Route the change through a tracked, conditional approval workflow with rationale and tiered discount thresholds.",
+      "Flag margin-floor breaches and track manual overrides with automatic revert on expiry.",
+      "Simulate target-seeking scenarios and analyse local performance to shortlist actions."
+    ],
+    "best": "Strong practice gives the approver the impact number at the moment of decision, enforces margin floors and escalating discount bands automatically, and reverts temporary overrides, so local changes stay consistent, defensible and inside policy.",
+    "personas": [
+      "market",
+      "kam",
+      "controller",
+      "analyst"
+    ],
+    "capability": "change-impact preview, approval workflow, margin-floor alerting, discount gates and scenario simulation."
+  },
+  "s7": {
+    "summary": "Manage time-bound and customer-specific pricing: campaigns, special prices, the discount and rebate logic, agreements and bonuses, and bids.",
+    "steps": [
+      "Set up campaign and temporary prices with scoped validity, minimum-margin checks and automatic revert, and measure uplift.",
+      "Maintain special-customer and regional price lists and requests with controlled eligibility.",
+      "Manage agreements, dealer bonuses and target deals, and simulate long-term-agreement scenarios against cost and volume.",
+      "Alert before contract obligations lapse, and support bid monitoring informed by bid history."
+    ],
+    "best": "Strong practice runs campaigns, special prices, agreements and bids inside the same governed system (same corridors, margin checks and approvals), measures their return, and never lets a supply obligation or contract end date pass unseen.",
+    "personas": [
+      "kam",
+      "market",
+      "analyst",
+      "controller"
+    ],
+    "capability": "campaign and temporary pricing, special-customer lists, discount and rebate, agreement and bonus management, and bid support."
+  },
+  "s8": {
+    "summary": "Publish and distribute approved prices to the consuming systems, covering both central publication and market distribution, with validated timing and confirmation of receipt.",
+    "steps": [
+      "Publish approved prices to ERP, logistics, product-information and invoicing systems with validated timing.",
+      "Distribute flexibly to channels and customer formats: full or delta lists, interfaces, future-dated.",
+      "Separate approval, communication and system-activation dates cleanly.",
+      "Confirm receipt and surface cross-market price differences and validity mismatches."
+    ],
+    "best": "Strong practice makes publication reliable and confirmed end to end: every distributed price is acknowledged by the downstream system with synchronised validity dates, so no silent price gap reaches the customer.",
+    "personas": [
+      "ops",
+      "pm",
+      "market",
+      "admin"
+    ],
+    "capability": "price publication, multi-channel and multi-format distribution, and receipt and validity synchronisation."
+  },
+  "s9": {
+    "summary": "Maintain the audit, history and compliance backbone: full traceability, retention and deletion, duty separation and price-health reporting.",
+    "steps": [
+      "Log who, what, when and why for every price change under a unique reference, retained for the required period.",
+      "Maintain end-to-end traceability from the final price back to rule, driver, cost and approval.",
+      "Enforce duty separation, the authorisation hierarchy, retention and deletion, and data-subject handling.",
+      "Generate audit, compliance and price-health reports from the record itself."
+    ],
+    "best": "Strong practice makes every price fully traceable to its origin and retained per policy, with deletion and data-subject handling and compliance reporting generated from the record, satisfying audit demands without manual assembly.",
+    "personas": [
+      "controller",
+      "ops",
+      "admin"
+    ],
+    "capability": "full audit trail, historisation, retention and deletion, compliance and price-health reporting."
+  }
+}
