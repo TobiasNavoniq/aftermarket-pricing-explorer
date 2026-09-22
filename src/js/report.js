@@ -7,9 +7,11 @@
    the machine.
 
    Layout follows the ThinkTrooper PDF house style: A4 landscape, an executive
-   summary page, then one detail page per pricing phase in scope, then the
-   technical recommendations. Every page carries an eyebrow, a headline
-   sentence, a lead paragraph, numbered EXHIBIT blocks and a running footer.
+   summary page, a concentration page, then one detail page per pricing phase
+   in scope. Every page carries an eyebrow, a headline sentence, a lead
+   paragraph, numbered EXHIBIT blocks and a running footer. Every page also
+   says something specific about this engagement -- that is the bar for adding
+   one.
 
    Page numbering is the browser's, not ours: report.js injects an @page rule
    whose @bottom-left / @bottom-right margin boxes carry the running footer and
@@ -152,7 +154,7 @@ export function buildReport() {
   activePhases.forEach((cv, i) => {
     h += page(phasePage(cv, i + 1, activePhases.length, total));
   });
-  h += page(recommendationsPage());
+  /* recommendationsPage() is parked, not called -- see its note below. */
   return h + '</div>';
 }
 
@@ -376,7 +378,15 @@ function phasePage(cv, index, phaseTotal, total) {
     '</div>';
 }
 
-/* ---- last page: technical recommendations ---- */
+/* ---- PARKED: technical recommendations page ----------------------------
+   Not called by buildReport(). The guidance is engagement-independent -- it
+   reads identically whatever was marked -- so it was adding a page that said
+   nothing about the engagement the report is about. Kept, with its content in
+   content/technology.json and its screen twin in views/technology.js, so the
+   decision is reversible: to restore it, call page(recommendationsPage()) at
+   the end of buildReport() and update the expected page count in
+   tools/pdfcheck.py and tests/checks.mjs.
+   ---------------------------------------------------------------------- */
 
 function recommendationsPage() {
   return '<div class="rpt-eyebrow rpt-sec-eyebrow">Technical recommendations &amp; attention points</div>' +

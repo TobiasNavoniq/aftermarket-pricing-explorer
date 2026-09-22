@@ -1,7 +1,8 @@
 /* ==========================================================================
    View: Priority Roadmap
-   Five pricing-phase columns, the summary strip above them, the click-to-open
-   detail panel below, and the collapsible Technical Recommendations card.
+   Five pricing-phase columns, the summary strip above them and the
+   click-to-open detail panel below. The Technical Recommendations accordion
+   at the end of this file is parked, not mounted -- see the note there.
 
    Each column and each detail card carries its phase colour on --pc, set
    inline by roadmap.js from canvas[].color in content/taxonomy.json.
@@ -21,15 +22,19 @@
 
 .road-head{display:block;width:100%;text-align:left;background:none;border:none;font-family:inherit;
   padding:13px 14px 12px;cursor:pointer;position:relative;transition:background .15s}
+/* Room for the "n marked" pill pinned top-right. */
+.road-head .rh-name,.road-head .rh-sub{padding-right:76px}
 .road-head:hover{background:#F6F9FA}
 .road-head.on{background:var(--pc,var(--navy))}
 .road-head .rh-name{display:block;font-size:13.5px;font-weight:800;color:var(--pc,var(--navy));letter-spacing:-.01em}
 .road-head .rh-sub{display:block;font-size:10.5px;color:var(--mute);margin-top:2px}
 .road-head .rh-steps{display:block;font-size:10px;color:var(--mute);margin-top:6px;letter-spacing:.06em;
   text-transform:uppercase;font-weight:700}
+/* Reads "5 marked", not a bare "5": a lone number here was indistinguishable
+   from the step numbers on the items below, which mean something else. */
 .road-head .rh-count{position:absolute;top:11px;right:12px;background:var(--pc,var(--navy));color:#fff;
-  font-size:11px;font-weight:800;border-radius:11px;min-width:21px;height:21px;display:flex;align-items:center;
-  justify-content:center;padding:0 6px;font-family:var(--font-mono)}
+  font-size:9.5px;font-weight:700;border-radius:11px;height:18px;display:flex;align-items:center;
+  justify-content:center;padding:0 8px;letter-spacing:.02em;white-space:nowrap}
 .road-head .rh-count.zero{background:#EEF3F5;color:#A8B6BE}
 .road-head.on .rh-name,.road-head.on .rh-sub,.road-head.on .rh-steps{color:#fff}
 .road-head.on .rh-sub,.road-head.on .rh-steps{opacity:.8}
@@ -41,13 +46,13 @@
 .ritem+.ritem{border-top:1px solid var(--line)}
 .ritem:hover{background:#F2F7F9}
 .ritem.on{background:var(--navy)}
-.ri-top{display:flex;gap:7px;align-items:flex-start}
-.rp{font-size:10px;font-weight:800;color:#fff;background:var(--pc,var(--sky));border-radius:5px;padding:1px 6px;
-  flex:none;margin-top:1px;font-family:var(--font-mono)}
-.ri-t{font-weight:700;font-size:12.5px;color:var(--ink);line-height:1.35}
-.ri-meta{display:flex;gap:6px;align-items:center;margin-top:6px;padding-left:25px}
+/* The step number is written into .ri-step as "Step 2 · <name>" rather than
+   carried in a badge of its own, so the number always sits next to the thing
+   it names and cannot be mistaken for a count. */
+.ri-t{display:block;font-weight:700;font-size:12.5px;color:var(--ink);line-height:1.35}
+.ri-meta{display:flex;gap:6px;align-items:baseline;margin-top:5px}
 .ri-layer{font-size:9px;font-weight:700;padding:1px 6px;border-radius:20px;color:#fff;letter-spacing:.03em;flex:none}
-.ri-step{font-size:10.5px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ri-step{flex:1;min-width:0;font-size:10.5px;color:var(--mute);line-height:1.35}
 .ritem.on .ri-t{color:#fff}
 .ritem.on .ri-step{color:#9FCAD6}
 .road-empty{padding:16px 10px;color:var(--mute);font-size:11.5px;font-style:italic}
@@ -97,7 +102,7 @@
 .rd-step-h{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800;color:var(--navy)}
 .rd-step-n{background:var(--pc,var(--navy));color:#fff;width:22px;height:22px;border-radius:6px;display:inline-flex;
   align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none;font-family:var(--font-mono)}
-.rd-step-c{margin-left:auto;font-size:11px;font-weight:800;color:var(--red);font-family:var(--font-mono)}
+.rd-step-c{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--red);letter-spacing:.02em;white-space:nowrap}
 .rd-step-sum{font-size:12px;color:var(--mute);line-height:1.55;margin:7px 0 11px;padding-left:31px}
 .rd-list{padding-left:31px;display:flex;flex-direction:column;gap:4px}
 .rd-jump{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;background:#F7FAFB;
@@ -108,7 +113,12 @@
 .rd-jump-d{display:block;font-size:11.5px;color:var(--mute);line-height:1.5;margin-top:2px}
 .rd-none{padding-left:31px;font-size:11.5px;color:var(--mute);font-style:italic}
 
-/* ---- Technical Recommendations, collapsed by default ---- */
+/* ---- PARKED: Technical Recommendations accordion ----------------------
+   Not mounted in the tool. The guidance is engagement-independent, so it now
+   renders only in the exported PDF (see .ti-print-* in report.css). These
+   rules are kept so the on-screen accordion can be restored in one step --
+   see the note at the top of src/js/views/technology.js.
+   ---------------------------------------------------------------------- */
 .ti-card{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow-l)}
 .ti-head{background:linear-gradient(105deg,var(--navy),var(--navy-2) 70%,#06283A);color:#fff;padding:20px 26px}
 .ti-eyebrow{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#7FD3E2;font-weight:700}

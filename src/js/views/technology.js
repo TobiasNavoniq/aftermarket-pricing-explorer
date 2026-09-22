@@ -5,10 +5,16 @@
    and watch-outs for the organisation, not as vendor-evaluation criteria.
    Content lives in content/technology.json.
 
-   On screen this is an accordion: headings only until one is opened, so the
-   roadmap page ends in a scannable strip rather than three columns of prose.
-   In the printed report every block is expanded, because a reader cannot
-   click paper.
+   This guidance is engagement-independent: it says the same thing whatever was
+   marked. It therefore belongs in the report the facilitator hands on, not in
+   the working surface, and it now renders only in the exported PDF, on its own
+   final page (see technologyPrintHTML below, called from report.js).
+
+   renderTechnology() is the on-screen accordion. It is PARKED, not dead: it is
+   not mounted anywhere today, deliberately. To bring it back, put
+   <div id="techIntegration"></div> into the roadmap panel in src/index.html and
+   call renderTechnology() from views/roadmap.js. Its styles are parked
+   alongside it at the end of src/css/roadmap.css.
    ========================================================================== */
 
 import { TECHNOLOGY } from '../content.js';

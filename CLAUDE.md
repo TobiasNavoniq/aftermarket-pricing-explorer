@@ -67,6 +67,17 @@ ids.
 `loadContent()`; ES module live bindings mean importers see the real values.
 Do not "fix" them to `const`.
 
+**Every surface must say something about the engagement.** Technical
+Recommendations & Attention Points reads identically whatever was marked, so it
+is shown nowhere: not on the roadmap tab, not in the PDF. Three things are
+**parked** — present, commented as such, not called: `renderTechnology()` in
+`views/technology.js`, its styles at the end of `roadmap.css`, and
+`recommendationsPage()` in `report.js`. `content/technology.json` stays as the
+content source. Do not delete any of it, and do not "helpfully" re-mount it;
+each file records how to if it is ever wanted back. Apply the same test to
+anything new: if a page or panel would read the same for every engagement, it
+does not earn its place.
+
 **The roadmap groups by pricing phase, not by delivery stage.** The five canvas
 phases are the same bands that sit above the matrix, so the roadmap continues
 the matrix rather than introducing a second taxonomy. Diagnose / Transform /

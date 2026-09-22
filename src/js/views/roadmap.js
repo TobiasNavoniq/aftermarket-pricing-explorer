@@ -17,6 +17,10 @@
    Transform / Execute), shown on the challenge detail.
 
    `detail` is view-local and not persisted.
+
+   The Technical Recommendations card used to sit below these columns. It is
+   engagement-independent guidance, so it now appears only in the exported PDF
+   report; see src/js/views/technology.js.
    ========================================================================== */
 
 import {
@@ -25,7 +29,6 @@ import {
 } from '../content.js';
 import { countAll, isOn, stepCount, stepsInScope, phaseBuckets, phaseCount, stageOfLayer } from '../state.js';
 import { $ } from '../util.js';
-import { renderTechnology } from './technology.js';
 
 const detail = { kind: null, id: null };
 
@@ -34,9 +37,6 @@ export function renderRoadmap() {
   const empty = $('roadEmpty');
   const summary = $('prioSummary');
   if (!road || !empty || !summary) return;
-
-  /* The guidance card is engagement-independent, so it renders either way. */
-  renderTechnology();
 
   const total = countAll();
   if (total === 0) {
@@ -67,15 +67,16 @@ export function renderRoadmap() {
       '<span class="rh-name">' + cv.name + '</span>' +
       '<span class="rh-sub">' + cv.sub + '</span>' +
       '<span class="rh-steps">Step' + (steps.length > 1 ? 's' : '') + ' ' + steps.map(s => s.n).join(', ') + '</span>' +
-      '<span class="rh-count' + (items.length ? '' : ' zero') + '">' + items.length + '</span>' +
+      '<span class="rh-count' + (items.length ? '' : ' zero') + '">' +
+      (items.length ? items.length + ' marked' : 'none marked') + '</span>' +
       '</button>';
     const list = items.length
       ? items.map(({ c, s }) =>
           '<button class="ritem" data-ch="' + c.id + '">' +
-          '<span class="ri-top"><span class="rp">' + s.n + '</span>' +
-          '<span class="ri-t">' + c.t + '</span></span>' +
+          '<span class="ri-t">' + c.t + '</span>' +
           '<span class="ri-meta"><span class="ri-layer" style="background:' + layerColor(c.layer) + '">' +
-          LAYERS[c.layer].short + '</span><span class="ri-step">' + s.name + '</span></span>' +
+          LAYERS[c.layer].short + '</span>' +
+          '<span class="ri-step">Step ' + s.n + ' · ' + s.name + '</span></span>' +
           '</button>').join('')
       : '<div class="road-empty">Nothing marked in this phase.</div>';
     return '<div class="road-col" style="--pc:' + cv.color + '">' + head + '<div class="road-list">' + list + '</div></div>';
@@ -167,7 +168,7 @@ function phaseDetail(phaseId) {
       : '<div class="rd-none">Nothing marked at this step.</div>';
     return '<div class="rd-step">' +
       '<div class="rd-step-h"><span class="rd-step-n">' + s.n + '</span>' + s.name +
-      '<span class="rd-step-c">' + stepCount(s.id) + '</span></div>' +
+      '<span class="rd-step-c">' + stepCount(s.id) + ' marked</span></div>' +
       (content ? '<div class="rd-step-sum">' + content.summary + '</div>' : '') +
       list + '</div>';
   }).join('');

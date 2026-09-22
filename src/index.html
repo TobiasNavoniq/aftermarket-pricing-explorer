@@ -199,7 +199,12 @@
         <div class="road" id="roadmap"></div>
         <div id="roadDetail" class="road-detail"></div>
         <div id="roadEmpty"></div>
-        <div id="techIntegration"></div>
+        <!-- Technical Recommendations & Attention Points used to render here as
+             an accordion. It now appears only in the exported PDF report, on its
+             own final page. The screen renderer is parked, not deleted: see
+             renderTechnology() in src/js/views/technology.js. Re-mounting it is
+             putting <div id="techIntegration"></div> back here and calling
+             renderTechnology() from views/roadmap.js. -->
       </section>
 
     </div>

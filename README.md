@@ -121,8 +121,13 @@ continuation of the matrix rather than a second, competing taxonomy.
      logic layer implies, what good looks like at that step, and the reference
      use cases that bear on it.
 
-   Below the columns, **Technical Recommendations & Attention Points** is an
-   accordion — headings only until you open one.
+**Technical Recommendations & Attention Points** is no longer shown anywhere —
+not on this tab and not in the report. It is engagement-independent boilerplate:
+it reads identically whatever you marked, so it told a reader nothing about the
+engagement the output is about. The content is still in
+`content/technology.json` and both renderers are parked, not deleted, so it can
+be brought back in one step — see the notes in `src/js/views/technology.js` and
+`src/js/report.js`.
 
 ### Sessions
 
@@ -150,10 +155,11 @@ blocks and a running footer with `PAGE n OF N`. One section per sheet:
 | 1 | Executive summary — headline, stat columns, **Exhibit 1**: distribution across the five pricing phases |
 | 2 | Where the requirements concentrate — **Exhibit 2**: heat map by step × tier, **Exhibit 3**: steps ranked by weight |
 | 3…n | One page per pricing phase in scope — marked challenges by step, with a fact strip |
-| last | Technical recommendations & attention points |
 
 Headline and lead sentences are generated from the marked selections, so the
-report states what this engagement actually shows rather than boilerplate.
+report states what this engagement actually shows. That is the bar for a page
+earning its place: if it would read the same for every engagement, it does not
+belong in the report.
 
 `python tools/pdfcheck.py` renders it with headless Chrome and asserts it
 paginates to exactly one sheet per section, in landscape, with correct page

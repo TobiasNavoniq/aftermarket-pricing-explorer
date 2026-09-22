@@ -89,8 +89,17 @@ export async function runChecks(window, errors, warns) {
     'Price Strategy|Price Setting|Price Steering|Price Execution|Price Transactions',
     $$('#roadmap .rh-name').map(e => e.textContent).join('|'));
   ok('roadmap lists 3 items', $$('#roadmap .ritem').length === 3, 'n=' + $$('#roadmap .ritem').length);
+  /* The badge reads "n marked", not a bare number, so it cannot be confused
+     with the step numbers on the items below. Parse the leading integer. */
+  const phaseCountOf = el => parseInt(el.querySelector('.rh-count').textContent, 10) || 0;
+  ok('phase count badges are labelled, not bare numbers',
+    $$('#roadmap .rh-count').every(e => /marked$/.test(e.textContent)),
+    $$('#roadmap .rh-count').map(e => e.textContent).join(' | '));
   ok('phase counts add up to 3',
-    $$('#roadmap .rh-count').reduce((a, e) => a + (+e.textContent), 0) === 3);
+    $$('#roadmap .road-col').reduce((a, c) => a + phaseCountOf(c), 0) === 3);
+  ok('each item names its step in words',
+    $$('#roadmap .ri-step').every(e => /^Step \d+ · /.test(e.textContent)),
+    $$('#roadmap .ri-step').map(e => e.textContent)[0]);
   ok('summary strip shows the total', $('#prioSummary .ps-item .v').textContent === '3');
   ok('summary strip has total + 5 phases + steps in scope', $$('#prioSummary .ps-item').length === 7,
     'n=' + $$('#prioSummary .ps-item').length);
@@ -98,7 +107,7 @@ export async function runChecks(window, errors, warns) {
   ok('detail panel starts closed', !$('#roadDetail').classList.contains('show'));
 
   /* ---- click a phase header ---- */
-  const filledPhases = $$('#roadmap .road-col').filter(c => +c.querySelector('.rh-count').textContent > 0);
+  const filledPhases = $$('#roadmap .road-col').filter(c => phaseCountOf(c) > 0);
   const firstFilled = filledPhases[0];
   click(firstFilled.querySelector('.road-head'));
   ok('phase detail opens', $('#roadDetail').classList.contains('show'));
@@ -124,15 +133,16 @@ export async function runChecks(window, errors, warns) {
   click($$('#roadmap .ritem')[2]);
   ok('clicking the open item again closes the detail', !$('#roadDetail').classList.contains('show'));
 
-  /* ---- technical recommendations accordion ---- */
-  ok('tech recs render as an accordion', $$('#techIntegration .ti-block').length === 3,
-    'n=' + $$('#techIntegration .ti-block').length);
-  ok('tech recs start collapsed', $$('#techIntegration .ti-block.open').length === 0);
-  click($$('#techIntegration .ti-btn')[0]);
-  ok('clicking a heading expands it', $$('#techIntegration .ti-block.open').length === 1);
-  ok('expanded block shows its items', $$('#techIntegration .ti-block.open .ti-item').length > 0);
-  click($$('#techIntegration .ti-btn')[0]);
-  ok('clicking again collapses it', $$('#techIntegration .ti-block.open').length === 0);
+  /* ---- technical recommendations are report-only ----
+     Engagement-independent guidance belongs in the document the facilitator
+     hands on, not on the working surface. It must not appear on the roadmap
+     tab, and it must still be the last page of the PDF (asserted below). */
+  ok('tech recs are not on the roadmap tab', $('#techIntegration') === null);
+  ok('no tech-rec accordion anywhere on screen', $$('.ti-card').length === 0,
+    'n=' + $$('.ti-card').length);
+  ok('roadmap panel ends with the detail panel',
+    !/Technical Recommendations/.test($('#panel-roadmap').textContent),
+    ($('#panel-roadmap').textContent.match(/Technical Recommendations.{0,40}/) || [])[0]);
 
   /* ---- print report ---- */
   click($('#pdfBtn'));
@@ -141,8 +151,8 @@ export async function runChecks(window, errors, warns) {
   const pages = [...rpt.querySelectorAll('.rpt-page')];
   ok('report built', rpt.querySelector('.rpt-h1') !== null);
   ok('report names the engagement', /Acme Motors RFP 2026/.test(rpt.textContent));
-  ok('report is summary + concentration + one page per phase in scope + recommendations',
-    pages.length === 2 + filledPhases.length + 1,
+  ok('report is summary + concentration + one page per phase in scope',
+    pages.length === 2 + filledPhases.length,
     'pages=' + pages.length + ' phases=' + filledPhases.length);
 
   /* Page numbering is done by the browser via @page margin boxes, so what the
@@ -167,7 +177,11 @@ export async function runChecks(window, errors, warns) {
   ok('report shows all 5 phases in the distribution', rpt.querySelectorAll('.rpt-phase').length === 5);
   ok('report ranks the steps in scope', rpt.querySelectorAll('.rpt-rank tbody tr').length >= 1);
   ok('report lists the marked challenges', rpt.querySelectorAll('.rpt-ch').length === 3);
-  ok('report has technical recommendations', rpt.querySelectorAll('.ti-print-block').length === 3);
+  ok('report carries no technical-recommendations page',
+    rpt.querySelectorAll('.ti-print-block').length === 0,
+    'n=' + rpt.querySelectorAll('.ti-print-block').length);
+  ok('every report page is about this engagement',
+    [...rpt.querySelectorAll('.rpt-page')].every(p => /\d/.test(p.textContent)));
   ok('report masthead logo present', rpt.querySelector('.rpt-masthead') !== null);
   ok('report never says "0 operational processing"', !/\b0 (data|steering|operational)/.test(rpt.textContent),
     (rpt.textContent.match(/\b0 (data|steering|operational)[a-z ]*/) || [])[0]);

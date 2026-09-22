@@ -126,10 +126,10 @@ def main() -> None:
     tmp = Path(tempfile.mkdtemp(prefix="apepdf_"))
     harness = make_harness(build, tmp / "harness.html")
 
-    # 1 executive summary + 1 concentration + one per phase in scope + 1 recommendations.
+    # 1 executive summary + 1 concentration + one page per pricing phase in scope.
     phases = {json.loads((ROOT / "content" / "taxonomy.json").read_text(encoding="utf-8"))
               ["steps"][int(c[1]) - 1]["canvas"] for c in SAMPLE}
-    expected = 2 + len(phases) + 1
+    expected = 2 + len(phases)
 
     failures = []
     for width in WIDTHS:
