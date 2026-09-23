@@ -225,7 +225,7 @@ def build(check_only: bool = False) -> Path | None:
 
     banner = (
         "<!--\n"
-        f"  ThinkTrooper - RFP & Pricing Process Analyzer, v{version}\n"
+        f"  ThinkTrooper - Aftermarket Pricing Explorer, v{version}\n"
         "  BUILT FILE - do not edit.\n"
         "  Generated from the source tree by tools/build.py. Any change made here\n"
         "  is lost on the next build. Edit content/*.json, src/css/* or src/js/*\n"

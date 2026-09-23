@@ -1,6 +1,6 @@
 # Aftermarket Pricing Explorer
 
-**ThinkTrooper · RFP & Pricing Process Analyzer**
+**ThinkTrooper · Aftermarket Pricing Explorer**
 
 An internal diagnostic for analysing an OEM's aftermarket (spare-parts) pricing
 process or an incoming RFP. It maps the process across **9 steps × 3 capability

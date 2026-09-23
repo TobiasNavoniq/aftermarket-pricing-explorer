@@ -5,7 +5,7 @@
 
 export const APP = {
   name: 'ThinkTrooper',
-  tool: 'RFP & Pricing Process Analyzer',
+  tool: 'Aftermarket Pricing Explorer',
   version: '0.4.2',
   year: '2026'
 };
