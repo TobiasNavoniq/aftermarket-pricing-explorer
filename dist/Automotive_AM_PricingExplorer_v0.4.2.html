@@ -51,6 +51,9 @@
   --navy:#003B5C; --navy-2:#0A2F45; --teal:#008CA8; --teal-d:#066B80;
   --sky:#4A90A4; --ink:#1A2730; --mute:#5F6A72; --line:#E2E8EC;
   --bg:#F4F7F9; --card:#FFFFFF; --paper:#FBFCFD;
+  /* Quiet fills: --wash behind list tiles and empty cells, --tint behind ghost
+     tags. Same values the roadmap and heat map use on screen. */
+  --wash:#F7FAFB; --tint:#EEF3F5;
 
   /* ---- Logic-layer accents (D / S / O). Must match layers[].color in
           content/taxonomy.json, which is what the JS actually renders. ---- */
@@ -58,6 +61,9 @@
 
   /* ---- Heat-map intensity ramp, lightest to darkest ---- */
   --h0:#EAF6F9; --h1:#CDE9EF; --h2:#9FD6E0; --h3:#5FB9C9; --h4:#1E97AE;
+  /* Figures on the ramp: --h-ink on --h1, --h-ink-d on --h2, white above that;
+     --h-zero for a cell with nothing marked. */
+  --h-ink:#0A4257; --h-ink-d:#06303F; --h-zero:#B7C3CA;
 
   /* ---- Typography ----
      Two intentional stacks: the shell chrome is Inter, the tool surfaces and
@@ -527,9 +533,29 @@ main{padding:26px 0 70px}
 .rd-fact b{color:var(--ink);text-align:right}
 .rd-stage{font-size:11.5px;color:var(--mute);line-height:1.5;margin-top:10px;background:#F4F8FA;border-radius:8px;padding:9px 12px}
 .rd-text{font-size:12.5px;color:var(--ink);line-height:1.6}
-.rd-uc{font-size:11.5px;color:var(--mute);line-height:1.5;padding:8px 0 8px 13px;border-left:2px solid var(--h2)}
-.rd-uc+.rd-uc{margin-top:6px}
+/* Reference use cases: disclosure buttons, each opening its detail inline
+   directly underneath (see useCaseDetail() in roadmap.js). */
+.rd-uc{display:block;width:100%;text-align:left;background:none;border:none;border-left:2px solid var(--h2);
+  font-family:inherit;font-size:11.5px;color:var(--mute);line-height:1.5;padding:8px 36px 8px 13px;cursor:pointer;
+  position:relative;border-radius:0 8px 8px 0;transition:background .13s,border-color .13s}
+.rd-uc+.rd-uc,.rd-uc-detail+.rd-uc{margin-top:6px}
 .rd-uc b{display:block;color:var(--navy);font-size:12px;margin-bottom:2px}
+.rd-uc::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;margin-top:-6px;
+  border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .2s}
+.rd-uc:hover{background:var(--wash);border-left-color:var(--sky)}
+.rd-uc.on{background:var(--tint);border-left-color:var(--pc,var(--teal))}
+.rd-uc.on::after{transform:rotate(-135deg);margin-top:-2px}
+.rd-uc:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+.rd-uc-detail{padding:14px 16px 16px 15px;border-left:2px solid var(--pc,var(--teal));
+  background:var(--paper);border-radius:0 0 8px 0;animation:rise .22s ease}
+.rd-uc-flow{list-style:none;counter-reset:ucf;margin:0;padding:0}
+.rd-uc-flow li{counter-increment:ucf;position:relative;padding:1px 0 9px 31px;font-size:12px;color:var(--ink);line-height:1.5}
+.rd-uc-flow li::before{content:counter(ucf);position:absolute;left:0;top:0;width:22px;height:22px;border-radius:6px;
+  background:var(--pc,var(--navy));color:#fff;font-family:var(--font-mono);font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+.rd-uc-actors{margin:0 0 10px}
+.rd-uc-detail .rd-fact{flex-direction:column;gap:2px}
+.rd-uc-detail .rd-fact b{text-align:left;font-weight:500;line-height:1.5}
 @media(max-width:860px){.rd-grid{grid-template-columns:1fr;gap:20px}}
 
 /* ---- phase detail: one block per step in the phase ---- */
@@ -593,20 +619,32 @@ main{padding:26px 0 70px}
 
    A4 landscape, one .rpt-page per printed sheet. Follows the ThinkTrooper PDF
    house style: tracked uppercase eyebrows, a headline sentence, a lead
-   paragraph, stat columns, numbered EXHIBIT blocks, and a running footer with
-   PAGE n OF N.
+   paragraph, numbered EXHIBIT blocks, and a running footer with PAGE n OF N.
+
+   It speaks the app's visual language, adapted for paper: exhibits are the
+   roadmap-detail card (hairline border, coloured top rule, soft header band),
+   the heat map is the on-screen tile grid and --h1..--h4 ramp, and challenge
+   lists are the roadmap's tiles. Shadows are left out: they print muddy.
+   Each page carries its accent on --pc (a phase page's canvas colour, teal
+   otherwise), exactly as the roadmap columns do.
 
    The running footer and PAGE n OF N live in @page margin boxes, in a <style>
    that report.js generates (the engagement name is per-report and the page
-   counter is only available there). .rpt-page just forces a break; the 186mm
-   min-height is the target each section should stay inside, not a guarantee.
+   counter is only available there). .rpt-page just forces a break; each
+   section must fit inside 186mm, which tools/pdfcheck.py verifies.
+
+   Figures and tracked labels use --font-figure, everything else --font-body.
+   No webfonts: the print output must not depend on one having loaded.
 
    The whole report is hidden on screen and only revealed by body.printing.
    ========================================================================== */
 
 .report-mount{display:none}
 
-.rpt{font-family:var(--font-body);color:#13202A;width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:break-word}
+/* print-color-adjust keeps the fills in Chrome even with "Background graphics"
+   unticked; other browsers still need the box ticked. */
+.rpt{font-family:var(--font-body);color:var(--ink);width:100%;max-width:100%;box-sizing:border-box;
+  overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .rpt *{box-sizing:border-box}
 .rpt-empty{font-size:13px;color:var(--mute);padding:20px 0}
 
@@ -615,112 +653,122 @@ main{padding:26px 0 70px}
    pushes its last exhibit onto a second sheet. break-after is what guarantees
    one section per sheet; 186mm is the budget each section must fit inside,
    which tools/pdfcheck.py verifies. */
-.rpt-page{position:relative;break-after:page;page-break-after:always}
+.rpt-page{position:relative;break-after:page;page-break-after:always;--pc:var(--teal)}
 .rpt-page:last-child{break-after:auto;page-break-after:auto}
 
-/* ---- title band, first page only ---- */
-.rpt-title-band{position:relative;border-bottom:3px solid var(--teal);padding-bottom:11px;margin-bottom:16px}
-.rpt-masthead{position:absolute;top:0;right:0;height:11mm;width:auto;filter:brightness(0);opacity:.9}
-.rpt-h1{font-size:26px;font-weight:800;color:var(--navy);margin-top:5px;letter-spacing:-.015em;line-height:1.1}
-.rpt-sub{font-size:11.5px;color:var(--mute);margin-top:5px}
-
-/* ---- house-style type ---- */
+/* ---- page head: eyebrow, headline, lead ---- */
+.rpt-head{margin-bottom:12px}
 .rpt-eyebrow{font-family:var(--font-figure);font-size:8.5px;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;color:var(--teal-d)}
-.rpt-sec-eyebrow{color:var(--mute);margin-bottom:7px}
+.rpt-sec-eyebrow{color:var(--mute);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.rpt-sec-eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--pc);flex:none}
 .rpt-headline{font-size:17.5px;font-weight:700;color:var(--navy);line-height:1.3;letter-spacing:-.01em;
-  max-width:215mm;margin-bottom:9px}
-.rpt-lead{font-size:10.5px;color:#33444F;line-height:1.55;max-width:250mm;margin-bottom:11px}
+  max-width:250mm;margin-bottom:7px}
+.rpt-lead{font-size:10.5px;color:var(--ink);line-height:1.55;max-width:250mm;margin:0;
+  border-left:3px solid var(--pc);padding-left:11px}
 
-/* ---- stat columns ---- */
-.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #DCE6EA;
-  border-bottom:1px solid #DCE6EA;margin-bottom:14px}
-.rpt-stat{padding:9px 16px 10px;border-right:1px solid #DCE6EA}
-.rpt-stat:last-child{border-right:none}
-.rpt-stat-l{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--mute)}
-.rpt-stat-v{font-size:19px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em;line-height:1.15}
-.rpt-stat-n{font-size:9px;color:#5F6A72;line-height:1.45;margin-top:4px}
-
-/* ---- exhibits ---- */
-.rpt-ex{margin-bottom:11px;break-inside:avoid}
-.rpt-ex-h{font-size:11px;font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:baseline;gap:9px;
+/* ---- exhibits: the roadmap detail card ---- */
+.rpt-ex{margin-bottom:10px;break-inside:avoid;background:var(--card);border:1px solid var(--line);
+  border-top:3px solid var(--pc);border-radius:12px;overflow:hidden}
+.rpt-ex-h{font-size:11px;font-weight:800;color:var(--navy);display:flex;align-items:baseline;gap:9px;
+  padding:8px 14px 7px;background:linear-gradient(180deg,var(--paper),var(--wash));border-bottom:1px solid var(--line);
   break-after:avoid;page-break-after:avoid}
-.rpt-ex-n{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--teal-d);
-  border:1px solid #BFE0E8;border-radius:3px;padding:1px 5px;flex:none}
-.rpt-ex-note{font-size:8px;color:var(--mute);line-height:1.5;margin-top:5px;font-style:italic}
+.rpt-ex-n{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--teal-d);flex:none}
+.rpt-ex-b{padding:10px 14px}
+.rpt-ex-note{font-size:8px;color:var(--mute);line-height:1.5;padding:0 14px 8px;margin-top:-3px;font-style:italic}
 
-/* ---- heat-map table ---- */
-.rpt-hm{width:100%;table-layout:fixed;border-collapse:collapse;font-size:10px;font-family:var(--font-figure)}
-.rpt-hm th,.rpt-hm td{border:1px solid #DCE6EA;text-align:center;padding:4px 2px;overflow:hidden}
-.rpt-hm thead th{background:var(--navy);color:#fff;font-weight:700}
-.rpt-hm col.c-tier{width:23%} .rpt-hm col.c-step{width:7.4%} .rpt-hm col.c-tot{width:7.4%}
-.rpt-hm .rh-corner,.rpt-hm .rh-tier{text-align:left;background:#EEF3F5;color:var(--navy);font-weight:700;
-  padding-left:7px;white-space:normal;line-height:1.2;font-family:var(--font-body);font-size:9.5px}
-.rpt-hm .rh-tot{background:var(--navy-2);color:#fff;font-weight:800}
-.rpt-hm .rh-footrow td{background:#E7EEF1;color:var(--navy);font-weight:800}
-.rpt-legend{font-size:8px;color:var(--mute);margin-top:6px;line-height:1.6}
-.rpt-legend b{color:var(--navy);font-family:var(--font-figure)}
+/* ---- heat map: the on-screen tile grid ---- */
+/* One grid for the whole exhibit, so the phase band, step cards, tiles and
+   totals share columns the way .mx-band rows do on screen. --steps is set by
+   report.js from taxonomy.json. */
+.rpt-hm{display:grid;grid-template-columns:40mm repeat(var(--steps,9),1fr) 15mm;gap:3px;
+  font-family:var(--font-figure)}
+.rh-corner{min-height:0}
+.rh-lab{display:flex;align-items:flex-end;padding:0 0 4px 2px;font-size:7.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--mute)}
+.rh-phase{border-radius:6px;color:#fff;font-family:var(--font-body);font-size:9.5px;font-weight:700;
+  padding:4px 8px;letter-spacing:.01em}
+.rh-step{background:var(--navy);color:#fff;border-radius:6px;padding:5px 4px;text-align:center;display:flex;
+  flex-direction:column;justify-content:center;min-height:33px}
+.rh-step .rh-n{font-size:12px;font-weight:700;color:var(--teal);line-height:1}
+.rh-step .rh-name{font-family:var(--font-body);font-size:7.5px;color:var(--h1);margin-top:2px;line-height:1.2}
+.rh-step.rh-sum{background:var(--navy-2)}
+.rh-tier{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:3px 9px;display:flex;
+  flex-direction:column;justify-content:center;font-family:var(--font-body)}
+.rh-tier b{font-size:9.5px;color:var(--navy)}
+.rh-tier span{font-size:8px;color:var(--mute);margin-top:1px}
+.rh-cell{border-radius:6px;min-height:27px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;border:1px solid transparent}
+.rh-tot{background:var(--navy-2);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;min-height:20px}
+.rh-tot.rh-grand{background:var(--navy)}
+.rh-foot{align-items:center;justify-content:flex-end;padding:0 8px 0 0}
 
-/* ---- phase distribution ---- */
-.rpt-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.rpt-phase{border:1px solid #DCE6EA;border-radius:7px;padding:8px 10px 9px}
-.rpt-phase.zero{opacity:.55}
-.rpt-phase-n{font-family:var(--font-figure);font-size:22px;font-weight:700;line-height:1}
-.rpt-phase-t{font-size:10.5px;font-weight:800;color:var(--navy);margin-top:2px}
-.rpt-phase-s{font-size:8px;color:var(--mute);margin-top:2px;line-height:1.4}
-.rpt-bar{height:4px;background:#EDF2F4;border-radius:3px;margin:7px 0 6px;overflow:hidden}
-.rpt-bar span{display:block;height:100%;border-radius:3px}
-.rpt-phase-mix{display:flex;gap:3px;flex-wrap:wrap}
-.rpt-mix{font-family:var(--font-figure);font-size:7px;font-weight:700;color:#fff;padding:1px 5px;border-radius:9px;
-  letter-spacing:.03em}
-.rpt-mix.zero{background:#E7EEF1;color:#8A98A0}
-.rpt-phase-share{font-size:8px;color:var(--mute);margin-top:5px}
+/* The ramp, shared by the tiles and the key. */
+.hb0{background:var(--wash);color:var(--h-zero);border-color:var(--line)}
+.hb1{background:var(--h1);color:var(--h-ink)}
+.hb2{background:var(--h2);color:var(--h-ink-d)}
+.hb3{background:var(--h3);color:#fff}
+.hb4{background:var(--h4);color:#fff}
+
+.rpt-hm-key{display:flex;align-items:center;gap:4px;margin-top:6px;font-family:var(--font-figure)}
+.rk-lab{font-size:7.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-right:6px}
+.rk-sw{font-size:8px;font-weight:700;min-width:26px;padding:2px 6px;border-radius:4px;text-align:center;
+  border:1px solid transparent}
 
 /* ---- ranked step table ---- */
 .rpt-rank{width:100%;border-collapse:collapse;font-size:9.5px}
 .rpt-rank thead th{text-align:left;font-family:var(--font-figure);font-size:7.5px;font-weight:700;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid #DCE6EA;padding:0 8px 4px 0}
-.rpt-rank td{padding:3px 8px 3px 0;border-bottom:1px solid #EDF2F4;vertical-align:middle}
+  letter-spacing:.13em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line);padding:0 8px 4px 0}
+.rpt-rank td{padding:2px 8px 2px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.rpt-rank tr:last-child td{border-bottom:none}
 .rpt-rank .rr-rank{font-family:var(--font-figure);color:var(--mute);width:22px}
-.rpt-rank .rr-step{color:var(--ink)}
-.rpt-rank .rr-step b{font-family:var(--font-figure);color:var(--navy)}
+.rpt-rank .rr-step{color:var(--ink);font-weight:600}
+.rpt-rank .rr-step b{font-family:var(--font-figure);color:var(--navy);margin-right:3px}
 .rpt-rank .rr-own{color:var(--mute);font-size:9px;white-space:nowrap}
 .rpt-rank .rr-n{font-family:var(--font-figure);font-weight:700;color:var(--navy);text-align:right;width:44px}
 .rpt-rank .rr-bar{width:34%}
-.rpt-rank .rr-bar span{display:block;height:5px;border-radius:3px}
 .rpt-rank .rr-share{font-family:var(--font-figure);color:var(--mute);text-align:right;width:44px}
+.rpt-track{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}
+.rpt-track span{display:block;height:100%;border-radius:3px}
 
-/* ---- per-step challenge blocks ---- */
-.rpt-step{margin-bottom:10px;break-inside:avoid}
-.rpt-step:last-child{margin-bottom:0}
-.rpt-step-h{font-size:11.5px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.rpt-step-h .rsn{background:var(--navy);color:#fff;width:18px;height:18px;border-radius:4px;display:inline-flex;
-  align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none;font-family:var(--font-figure)}
-.rpt-step-sum{font-size:8.5px;color:var(--mute);line-height:1.5;margin:0 0 5px 26px;font-style:italic}
+/* ---- tags: the roadmap's .rd-tag ---- */
 .rpt-tags{margin-left:auto;display:flex;gap:5px;flex:none}
-.rpt-tag{font-size:8px;font-weight:700;color:#fff;padding:2px 7px;border-radius:10px;white-space:nowrap}
-.rpt-tag.ghost{background:#EEF3F5;color:var(--navy);border:1px solid #DCE6EA}
-.rpt-ch{display:flex;gap:7px;padding:3px 0 3px 26px;break-inside:avoid}
-.rpt-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:3px}
-.rpt-ch-t{font-size:10px;font-weight:700;color:#1A2730}
-.rpt-ch-tier{font-weight:600;color:var(--mute);font-size:8px;font-family:var(--font-figure);letter-spacing:.04em}
-.rpt-ch-d{font-size:9px;color:#52606B;line-height:1.45;margin-top:1px}
+.rpt-tag{font-size:8px;font-weight:700;color:#fff;background:var(--pc);padding:2px 8px;border-radius:10px;
+  white-space:nowrap;letter-spacing:.02em}
+.rpt-tag.ghost{background:var(--tint);color:var(--navy);border:1px solid var(--line)}
 
-/* ---- bottom fact strip ---- */
-.rpt-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #DCE6EA;padding-top:8px;margin-top:10px}
-.rpt-fact{padding-right:16px}
+/* ---- per-step challenge blocks: the roadmap's phase detail ---- */
+.rpt-step{padding:0 0 9px;margin-bottom:9px;border-bottom:1px solid var(--line);break-inside:avoid}
+.rpt-step:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.rpt-step-h{font-size:11.5px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.rpt-step-h .rsn{background:var(--pc);color:#fff;width:19px;height:19px;border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;font-family:var(--font-figure)}
+.rpt-step-sum{font-size:8.5px;color:var(--mute);line-height:1.5;margin:0 0 6px 27px}
+.rpt-ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 6px;margin-left:27px}
+.rpt-ch{display:flex;gap:7px;padding:5px 9px 6px;background:var(--wash);border:1px solid var(--line);border-radius:7px;
+  break-inside:avoid}
+.rpt-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:3px}
+.rpt-ch-t{font-size:9.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.rpt-ch-tier{font-weight:600;color:var(--teal-d);font-size:7.5px;font-family:var(--font-figure);letter-spacing:.04em;margin-top:1px}
+.rpt-ch-d{font-size:8.5px;color:var(--mute);line-height:1.45;margin-top:2px}
+
+/* ---- fact strip: the roadmap's summary strip ---- */
+.rpt-facts{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:8px 0}
+.rpt-fact{padding:0 16px;border-right:1px solid var(--line)}
+.rpt-fact:last-child{border-right:none}
 .rpt-fact span{display:block;font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--mute)}
-.rpt-fact b{display:block;font-size:12px;color:var(--navy);margin-top:2px}
+.rpt-fact b{display:block;font-size:13px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em}
 
 /* ---- technical recommendations, print variant ---- */
 .ti-print{margin-top:2px;columns:2;column-gap:14mm}
 .ti-print-block{margin-bottom:12px;break-inside:avoid}
 .ti-print-title{font-size:11px;font-weight:800;color:var(--navy);margin-bottom:3px;break-after:avoid}
 .ti-print-lead{font-size:8.5px;color:var(--mute);font-style:italic;line-height:1.45;margin-bottom:6px;break-after:avoid}
-.ti-print-item{font-size:9px;color:#33444F;line-height:1.5;margin-bottom:6px;padding-left:10px;
-  border-left:2px solid #CDE9EF;break-inside:avoid}
+.ti-print-item{font-size:9px;color:var(--ink);line-height:1.5;margin-bottom:6px;padding-left:10px;
+  border-left:2px solid var(--h1);break-inside:avoid}
 .ti-print-h{font-weight:700;color:var(--ink)}
 
 @media print{
@@ -735,7 +783,7 @@ main{padding:26px 0 70px}
   body.printing>*{display:none !important}
   body.printing .report-mount{display:block !important;width:100%}
   .rpt{font-size:100%}
-  .rpt-step,.rpt-ch,.rpt-hm tr,.rpt-ex,.rpt-phase{break-inside:avoid}
+  .rpt-step,.rpt-ch,.rpt-ex,.rpt-phase{break-inside:avoid}
   .ti-print-item,.ti-print-block{break-inside:avoid}
 }
 
@@ -745,7 +793,48 @@ main{padding:26px 0 70px}
    the sheet, and quietly added pages. The printed layout must never depend on
    window size. */
 @media screen and (max-width:1000px){
-  .rpt-stats,.rpt-facts{grid-template-columns:repeat(2,1fr)}
+  .rpt-facts{grid-template-columns:repeat(2,1fr)}
+  .rpt-ch-grid{grid-template-columns:1fr}
+}
+
+/* ---- PARKED: executive-summary cover ----------------------------------
+   Used only by summaryPage() in report.js, which is parked, not called: the
+   report now opens on the concentration page. Kept, already restyled to
+   match the rest of the report, so the cover can come back in one step --
+   see the note above summaryPage().
+   ---------------------------------------------------------------------- */
+/* ---- title band, first page only ---- */
+.rpt-title-band{position:relative;border-bottom:3px solid var(--teal);padding-bottom:11px;margin-bottom:16px}
+.rpt-masthead{position:absolute;top:0;right:0;height:11mm;width:auto;filter:brightness(0);opacity:.9}
+.rpt-h1{font-size:26px;font-weight:800;color:var(--navy);margin-top:5px;letter-spacing:-.015em;line-height:1.1}
+.rpt-sub{font-size:11.5px;color:var(--mute);margin-top:5px}
+
+/* ---- stat columns, executive summary ---- */
+.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:9px 0 10px;margin-bottom:12px}
+.rpt-stat{padding:0 16px;border-right:1px solid var(--line)}
+.rpt-stat:last-child{border-right:none}
+.rpt-stat-l{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mute)}
+.rpt-stat-v{font-size:19px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em;line-height:1.15}
+.rpt-stat-n{font-size:9px;color:var(--mute);line-height:1.45;margin-top:4px}
+
+/* ---- phase distribution, executive summary: the roadmap columns ---- */
+.rpt-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.rpt-phase{border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:10px;padding:8px 10px 9px}
+.rpt-phase.zero{opacity:.55}
+.rpt-phase-n{font-family:var(--font-figure);font-size:22px;font-weight:700;line-height:1;color:var(--pc)}
+.rpt-phase-t{font-size:10.5px;font-weight:800;color:var(--navy);margin-top:2px}
+.rpt-phase-s{font-size:8px;color:var(--mute);margin-top:2px;line-height:1.4}
+.rpt-bar{height:5px;background:var(--bg);border-radius:3px;margin:7px 0 6px;overflow:hidden}
+.rpt-bar span{display:block;height:100%;border-radius:3px;background:var(--pc)}
+.rpt-phase-mix{display:flex;gap:3px;flex-wrap:wrap}
+.rpt-mix{font-family:var(--font-figure);font-size:7px;font-weight:700;color:#fff;padding:1px 5px;border-radius:9px;
+  letter-spacing:.03em}
+.rpt-mix.zero{background:var(--tint);color:var(--h-zero)}
+.rpt-phase-share{font-size:8px;color:var(--mute);margin-top:5px}
+@media screen and (max-width:1000px){
+  .rpt-stats{grid-template-columns:repeat(2,1fr)}
   .rpt-phases{grid-template-columns:repeat(2,1fr)}
 }
 
@@ -1841,7 +1930,13 @@ function renderHeatmap() {
    challenge carries the delivery stage its logic layer implies (Diagnose /
    Transform / Execute), shown on the challenge detail.
 
-   `detail` is view-local and not persisted.
+   The reference use cases at the foot of a challenge detail are disclosure
+   buttons: one opens its detail inline, right under itself, so nobody has to
+   scroll to find it. Clicking it again closes it; one is open at a time.
+
+   `detail` and `openUc` are view-local and not persisted. `openUc` is dropped
+   whenever the detail it sits in changes, and when a change of marks leaves
+   no marked step that references it.
 
    The Technical Recommendations card used to sit below these columns. It is
    engagement-independent guidance, so it now appears only in the exported PDF
@@ -1850,6 +1945,13 @@ function renderHeatmap() {
 
 
 const detail = { kind: null, id: null };
+let openUc = null;
+
+/* A use case is on the roadmap while any step that references it has
+   something marked. */
+function ucOnRoadmap(code) {
+  return STEPS.some(s => (s.ucs || []).includes(code) && stepCount(s.id) > 0);
+}
 
 function renderRoadmap() {
   const road = $('roadmap');
@@ -1862,6 +1964,7 @@ function renderRoadmap() {
     road.innerHTML = '';
     summary.innerHTML = '';
     detail.kind = null;
+    openUc = null;
     renderDetail();
     empty.innerHTML = '<div class="empty-state"><div class="big">Nothing to sequence yet</div>' +
       'Mark applicable challenges in the matrix to lay them out across the five pricing phases.</div>';
@@ -1906,6 +2009,7 @@ function renderRoadmap() {
   road.querySelectorAll('.ritem[data-ch]')
     .forEach(el => el.addEventListener('click', () => openDetail('challenge', el.dataset.ch)));
 
+  if (openUc && !ucOnRoadmap(openUc)) openUc = null;
   renderDetail();
 }
 
@@ -1913,6 +2017,7 @@ function renderRoadmap() {
 function openDetail(kind, id) {
   if (detail.kind === kind && detail.id === id) { detail.kind = null; detail.id = null; }
   else { detail.kind = kind; detail.id = id; }
+  openUc = null;
   renderDetail();
   if (detail.kind) $('roadDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -1920,7 +2025,17 @@ function openDetail(kind, id) {
 function closeDetail() {
   detail.kind = null;
   detail.id = null;
+  openUc = null;
   renderDetail();
+}
+
+/* The re-render replaces the button, so hand focus back to its successor or
+   a keyboard user is dropped to the top of the page. */
+function toggleUc(code) {
+  openUc = openUc === code ? null : code;
+  renderDetail();
+  const btn = document.querySelector('#roadDetail .rd-uc[data-uc="' + code + '"]');
+  if (btn) btn.focus();
 }
 
 function markActiveRoadmap() {
@@ -1950,6 +2065,8 @@ function renderDetail() {
   if (close) close.addEventListener('click', closeDetail);
   box.querySelectorAll('.rd-jump[data-ch]')
     .forEach(el => el.addEventListener('click', () => openDetail('challenge', el.dataset.ch)));
+  box.querySelectorAll('.rd-uc[data-uc]')
+    .forEach(el => el.addEventListener('click', () => toggleUc(el.dataset.uc)));
   markActiveRoadmap();
 }
 
@@ -2014,7 +2131,11 @@ function challengeDetail(challengeId) {
 
   const useCases = (s.ucs || []).map(u => {
     const uc = USECASES[u];
-    return uc ? '<div class="rd-uc"><b>' + uc.code + ' · ' + uc.name + '</b>' + uc.purpose + '</div>' : '';
+    if (!uc) return '';
+    const open = openUc === uc.code;
+    return '<button class="rd-uc' + (open ? ' on' : '') + '" data-uc="' + uc.code + '" aria-expanded="' + open + '"' +
+      ' aria-controls="rdUc-' + uc.code + '"><b>' + uc.code + ' · ' + uc.name + '</b>' + uc.purpose + '</button>' +
+      (open ? useCaseDetail(uc) : '');
   }).join('');
 
   const inner =
@@ -2037,6 +2158,27 @@ function challengeDetail(challengeId) {
   return detailShell(cv.color, 'Challenge ' + c.id, c.t, meta, inner);
 }
 
+/* Everything content/use-cases.json holds for one use case bar the code, name
+   and purpose, which its button already shows. */
+function useCaseDetail(uc) {
+  return '<div class="rd-uc-detail" id="rdUc-' + uc.code + '" role="region" aria-label="' + uc.code + ' ' + uc.name + '">' +
+    '<div class="rd-grid">' +
+      '<div>' +
+        '<div class="rd-lab">Process flow</div>' +
+        '<ol class="rd-uc-flow">' + uc.flow.map(f => '<li>' + f + '</li>').join('') + '</ol>' +
+      '</div>' +
+      '<div>' +
+        '<div class="rd-lab">Actors</div>' +
+        '<div class="rd-meta rd-uc-actors">' + uc.actors.map(a => '<span class="rd-tag ghost">' + a + '</span>').join('') + '</div>' +
+        '<div class="rd-fact"><span>Trigger</span><b>' + uc.trigger + '</b></div>' +
+        '<div class="rd-fact"><span>Inputs</span><b>' + uc.inputs + '</b></div>' +
+        '<div class="rd-fact"><span>Outputs</span><b>' + uc.outputs + '</b></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="rd-stage"><b>Why it matters across the industry</b> ' + uc.pain + '</div>' +
+    '</div>';
+}
+
 /* ---- report.js ---- */
 /* ==========================================================================
    Print report
@@ -2046,9 +2188,9 @@ function challengeDetail(challengeId) {
    destination is the deliverable; there is no PDF library and nothing leaves
    the machine.
 
-   Layout follows the ThinkTrooper PDF house style: A4 landscape, an executive
-   summary page, a concentration page, then one detail page per pricing phase
-   in scope. Every page carries an eyebrow, a headline sentence, a lead
+   Layout follows the ThinkTrooper PDF house style: A4 landscape, opening on
+   the concentration page as its intro, then one detail page per pricing phase
+   in scope. (The executive-summary cover is parked; see summaryPage().) Every page carries an eyebrow, a headline sentence, a lead
    paragraph, numbered EXHIBIT blocks and a running footer. Every page also
    says something specific about this engagement -- that is the bar for adding
    one.
@@ -2067,8 +2209,11 @@ function challengeDetail(challengeId) {
    Every string that can come from content JSON or from the facilitator is run
    through esc(): this HTML ends up in a document people hand on.
 
-   Remind the user to enable "Background graphics" in the print dialog, or the
-   heat-map shading and the header bars come out white.
+   The look follows the app, adapted for paper: exhibits are cards with a
+   coloured top rule, the heat map uses the on-screen tile grid and ramp, and
+   each phase page carries its canvas colour on --pc, as the roadmap columns
+   do. report.css sets print-color-adjust:exact so Chrome keeps the fills; still
+   remind the user to enable "Background graphics" for other browsers.
    ========================================================================== */
 
 
@@ -2104,13 +2249,23 @@ function exhibit(title, body, note) {
   exhibitNo += 1;
   return '<div class="rpt-ex">' +
     '<div class="rpt-ex-h"><span class="rpt-ex-n">EXHIBIT ' + exhibitNo + '</span>' + esc(title) + '</div>' +
-    body +
+    '<div class="rpt-ex-b">' + body + '</div>' +
     (note ? '<div class="rpt-ex-note">' + esc(note) + '</div>' : '') +
     '</div>';
 }
 
-function page(inner) {
-  return '<section class="rpt-page">' + inner + '</section>';
+/* `color` is the page's accent on --pc: a phase page takes its canvas colour,
+   anything else falls back to teal in report.css. */
+function page(inner, color) {
+  return '<section class="rpt-page"' + (color ? ' style="--pc:' + color + '"' : '') + '>' + inner + '</section>';
+}
+
+/* Eyebrow, headline and lead are passed in already escaped. */
+function pageHead(eyebrow, headline, lead) {
+  return '<header class="rpt-head">' +
+    '<div class="rpt-eyebrow rpt-sec-eyebrow">' + eyebrow + '</div>' +
+    '<div class="rpt-headline">' + headline + '</div>' +
+    '<p class="rpt-lead">' + lead + '</p></header>';
 }
 
 /* The running footer lives in the @page margin boxes, which is the only place
@@ -2129,6 +2284,7 @@ function pageRule() {
     '}</style>';
 }
 
+/* Parked with summaryPage(), its only caller. */
 function statCol(label, value, note) {
   return '<div class="rpt-stat"><div class="rpt-stat-l">' + esc(label) + '</div>' +
     '<div class="rpt-stat-v">' + value + '</div>' +
@@ -2154,6 +2310,7 @@ function heaviestStep() {
   return best;
 }
 
+/* Parked with summaryPage(), its only caller. */
 function heaviestPhase() {
   let best = null;
   CANVAS.forEach(cv => {
@@ -2178,12 +2335,12 @@ function buildReport() {
   const activePhases = CANVAS.filter(cv => phaseCount(cv.id) > 0);
 
   let h = pageRule() + '<div class="rpt">';
-  h += page(summaryPage(total));
+  /* summaryPage() and recommendationsPage() are parked, not called -- see
+     their notes below. */
   h += page(concentrationPage(total));
   activePhases.forEach((cv, i) => {
-    h += page(phasePage(cv, i + 1, activePhases.length, total));
+    h += page(phasePage(cv, i + 1, activePhases.length, total), cv.color);
   });
-  /* recommendationsPage() is parked, not called -- see its note below. */
   return h + '</div>';
 }
 
@@ -2200,7 +2357,18 @@ function layerProse(layers) {
 
 const STAGE_NAME = { D: 'Diagnose', S: 'Transform', O: 'Execute' };
 
-/* ---- page 1: executive summary ---- */
+/* ---- PARKED: executive-summary cover ------------------------------------
+   Not called by buildReport(). Review feedback was that the report should
+   open on the concentration page as its intro, so this page -- the title band
+   (logo masthead, INTERNAL eyebrow, engagement name, date), the executive
+   summary headline and lead, the four stat columns and the phase-distribution
+   exhibit -- is no longer built. Its helpers statCol(), heaviestPhase() and
+   phaseTable() are parked with it, and its styles sit in the parked block at
+   the end of report.css. To restore it, put h += page(summaryPage(total))
+   back as the first page in buildReport(), and update the expected page count
+   in tools/pdfcheck.py, the page checks in tests/checks.mjs and the page table
+   in README.md.
+   ---------------------------------------------------------------------- */
 
 function summaryPage(total) {
   const topPhase = heaviestPhase();
@@ -2228,9 +2396,7 @@ function summaryPage(total) {
       '<div class="rpt-h1">' + esc(engagementName()) + '</div>' +
       '<div class="rpt-sub">Aftermarket pricing process diagnostic &middot; ' + esc(reportDate()) + '</div>' +
     '</div>' +
-    '<div class="rpt-eyebrow rpt-sec-eyebrow">Executive summary</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+    pageHead('Executive summary', headline, lead) +
     '<div class="rpt-stats">' +
       statCol('What was marked', total, 'Challenges across ' + stepsInScope() + ' of ' + STEPS.length + ' process steps.') +
       statCol('Where it concentrates', esc(topPhase.phase.name.replace('Price ', '')) + ' &middot; ' + topPhase.n,
@@ -2244,7 +2410,7 @@ function summaryPage(total) {
       'nothing marked is not discussed further in this report.');
 }
 
-/* ---- page 2: where it concentrates ---- */
+/* ---- page 1: where it concentrates, the report's intro ---- */
 
 function concentrationPage(total) {
   const topStep = heaviestStep();
@@ -2268,13 +2434,12 @@ function concentrationPage(total) {
       '<td><span class="rpt-tag" style="background:' + cv.color + '">' + esc(cv.name) + '</span></td>' +
       '<td class="rr-own">' + esc(OWNERS[r.s.owner].label) + '</td>' +
       '<td class="rr-n">' + r.n + '</td>' +
-      '<td class="rr-bar"><span style="width:' + Math.round((r.n / ranked[0].n) * 100) + '%;background:' + cv.color + '"></span></td>' +
+      '<td class="rr-bar"><span class="rpt-track"><span style="width:' + Math.round((r.n / ranked[0].n) * 100) +
+        '%;background:' + cv.color + '"></span></span></td>' +
       '<td class="rr-share">' + Math.round((r.n / total) * 100) + '%</td></tr>';
   }).join('');
 
-  return '<div class="rpt-eyebrow rpt-sec-eyebrow">Where the requirements concentrate</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+  return pageHead('Where the requirements concentrate', headline, lead) +
     exhibit('Requirement concentration by process step and capability tier', heatmapTable(total),
       'Cells count marked challenges. Shading is relative to the busiest cell, not an absolute scale.') +
     exhibit('Process steps in scope, ranked by weight',
@@ -2295,40 +2460,61 @@ function heatmapTable(total) {
     });
   });
 
-  /* Coarser ramp than the on-screen heat map: three bands survive greyscale
-     printing and low-quality PDF rendering better than five. */
-  const shade = n => {
-    if (n === 0) return '#F4F7F9';
-    const r = n / max;
-    if (r <= 0.33) return '#CDE9EF';
-    if (r <= 0.66) return '#7FC9D6';
-    return '#1E97AE';
-  };
+  /* Same geometry as the on-screen heat map (phase band, step cards, tier
+     cards, tiles), plus the tier-total column the report has always carried. */
+  let h = '<div class="rpt-hm" style="--steps:' + STEPS.length + '">';
 
-  let h = '<table class="rpt-hm"><colgroup><col class="c-tier">';
-  STEPS.forEach(() => { h += '<col class="c-step">'; });
-  h += '<col class="c-tot"></colgroup><thead><tr><th class="rh-corner">Tier \\ Step</th>';
-  STEPS.forEach(s => { h += '<th>' + s.n + '</th>'; });
-  h += '<th class="rh-tot">Σ</th></tr></thead><tbody>';
+  h += '<div class="rh-corner"></div>';
+  canvasGroups().forEach(g => {
+    h += '<div class="rh-phase" style="grid-column:span ' + g.steps.length + ';background:' + g.cv.color + '">' +
+      esc(g.cv.name) + '</div>';
+  });
+  h += '<div class="rh-corner"></div>';
+
+  h += '<div class="rh-corner rh-lab">Tier</div>';
+  STEPS.forEach(s => {
+    h += '<div class="rh-step"><span class="rh-n">' + s.n + '</span><span class="rh-name">' + esc(s.name) + '</span></div>';
+  });
+  h += '<div class="rh-step rh-sum"><span class="rh-n">Σ</span><span class="rh-name">Tier total</span></div>';
 
   TIERS.forEach(t => {
-    h += '<tr><td class="rh-tier">' + esc(t.name) + '</td>';
+    h += '<div class="rh-tier"><b>' + esc(t.name) + '</b><span>' + esc(t.sub) + '</span></div>';
     STEPS.forEach(s => {
       const v = grid[t.id][s.id];
-      h += '<td style="background:' + shade(v) + ';color:' + (v && v / max > 0.66 ? '#fff' : '#0A2F45') + '">' + (v || '') + '</td>';
+      h += '<div class="rh-cell hb' + heatBand(v, max) + '">' + v + '</div>';
     });
-    h += '<td class="rh-tot">' + STEPS.reduce((a, s) => a + grid[t.id][s.id], 0) + '</td></tr>';
+    h += '<div class="rh-tot">' + STEPS.reduce((a, s) => a + grid[t.id][s.id], 0) + '</div>';
   });
 
-  h += '<tr class="rh-footrow"><td class="rh-tier">Step total</td>';
-  STEPS.forEach(s => { h += '<td>' + (stepCount(s.id) || '') + '</td>'; });
-  h += '<td class="rh-tot">' + total + '</td></tr></tbody></table>';
+  h += '<div class="rh-corner rh-lab rh-foot">Step total</div>';
+  STEPS.forEach(s => { h += '<div class="rh-tot">' + stepCount(s.id) + '</div>'; });
+  h += '<div class="rh-tot rh-grand">' + total + '</div></div>';
 
-  h += '<div class="rpt-legend">Step key: ' +
-    STEPS.map(s => '<b>' + s.n + '</b> ' + esc(s.name)).join(' · ') + '</div>';
-  return h;
+  return h + heatLegend(max);
 }
 
+/* The on-screen ramp from views/heatmap.js, as a band number 0-4 that
+   report.css maps to the --h1..--h4 tokens. Same thresholds, so a cell reads
+   the same shade on paper as on screen. */
+function heatBand(n, max) {
+  if (n === 0) return 0;
+  const r = n / max;
+  return r <= 0.25 ? 1 : r <= 0.5 ? 2 : r <= 0.75 ? 3 : 4;
+}
+
+/* One swatch per band that actually occurs at this maximum, labelled with the
+   counts it covers, so the key reads "1 · 2 · 3–4" rather than percentages. */
+function heatLegend(max) {
+  const bands = {};
+  for (let n = 1; n <= max; n++) (bands[heatBand(n, max)] = bands[heatBand(n, max)] || []).push(n);
+  const label = ns => ns.length > 1 ? ns[0] + '–' + ns[ns.length - 1] : String(ns[0]);
+  return '<div class="rpt-hm-key"><span class="rk-lab">Marked per cell</span>' +
+    '<span class="rk-sw hb0">0</span>' +
+    Object.keys(bands).map(b => '<span class="rk-sw hb' + b + '">' + label(bands[b]) + '</span>').join('') +
+    '</div>';
+}
+
+/* Parked with summaryPage(), its only caller. */
 function phaseTable(total) {
   const buckets = phaseBuckets();
   const max = Math.max(1, ...CANVAS.map(cv => phaseCount(cv.id)));
@@ -2341,12 +2527,12 @@ function phaseTable(total) {
     const mix = Object.keys(layers).filter(k => layers[k])
       .map(k => '<span class="rpt-mix" style="background:' + layerColor(k) + '">' + LAYERS[k].short + ' ' + layers[k] + '</span>')
       .join('') || '<span class="rpt-mix zero">none</span>';
-    return '<div class="rpt-phase' + (n ? '' : ' zero') + '">' +
-      '<div class="rpt-phase-n" style="color:' + cv.color + '">' + n + '</div>' +
+    return '<div class="rpt-phase' + (n ? '' : ' zero') + '" style="--pc:' + cv.color + '">' +
+      '<div class="rpt-phase-n">' + n + '</div>' +
       '<div class="rpt-phase-t">' + esc(cv.name) + '</div>' +
       '<div class="rpt-phase-s">Step' + (steps.length > 1 ? 's' : '') + ' ' + steps.map(s => s.n).join(', ') +
       ' &middot; ' + esc([...new Set(steps.map(s => OWNERS[s.owner].label))].join(' / ')) + '</div>' +
-      '<div class="rpt-bar"><span style="width:' + Math.round((n / max) * 100) + '%;background:' + cv.color + '"></span></div>' +
+      '<div class="rpt-bar"><span style="width:' + Math.round((n / max) * 100) + '%"></span></div>' +
       '<div class="rpt-phase-mix">' + mix + '</div>' +
       '<div class="rpt-phase-share">' + (total ? Math.round((n / total) * 100) : 0) + '% of all marked</div>' +
       '</div>';
@@ -2382,21 +2568,18 @@ function phasePage(cv, index, phaseTotal, total) {
     return '<div class="rpt-step">' +
       '<div class="rpt-step-h"><span class="rsn">' + s.n + '</span>' + esc(s.name) +
       '<span class="rpt-tags"><span class="rpt-tag ghost">' + esc(OWNERS[s.owner].label) + '</span>' +
-      '<span class="rpt-tag" style="background:' + cv.color + '">' + marked.length + ' marked</span></span></div>' +
+      '<span class="rpt-tag">' + marked.length + ' marked</span></span></div>' +
       (content ? '<div class="rpt-step-sum">' + esc(content.summary) + '</div>' : '') +
-      marked.map(c =>
+      '<div class="rpt-ch-grid">' + marked.map(c =>
         '<div class="rpt-ch"><span class="rpt-dot" style="background:' + layerColor(c.layer) + '"></span><div>' +
-        '<div class="rpt-ch-t">' + esc(c.t) +
-        ' <span class="rpt-ch-tier">' + esc(c.id) + ' &middot; ' +
-        esc(c.tiers.map(id => TIERS.find(t => t.id === id).name).join(', ')) + '</span></div>' +
+        '<div class="rpt-ch-t">' + esc(c.t) + '</div>' +
+        '<div class="rpt-ch-tier">' + esc(c.id) + ' &middot; ' +
+        esc(c.tiers.map(id => TIERS.find(t => t.id === id).name).join(', ')) + '</div>' +
         '<div class="rpt-ch-d">' + esc(c.d) + '</div></div></div>').join('') +
-      '</div>';
+      '</div></div>';
   }).join('');
 
-  return '<div class="rpt-eyebrow rpt-sec-eyebrow">Phase ' + index + ' of ' + phaseTotal +
-      ' &middot; ' + esc(cv.name.toUpperCase()) + '</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+  return pageHead('Phase ' + index + ' of ' + phaseTotal + ' &middot; ' + esc(cv.name.toUpperCase()), headline, lead) +
     exhibit('Marked challenges in ' + cv.name + ', by process step', body,
       'Each dot is the logic layer: blue data and modelling, green steering and governance, amber operational processing.') +
     '<div class="rpt-facts">' +

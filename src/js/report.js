@@ -6,9 +6,9 @@
    destination is the deliverable; there is no PDF library and nothing leaves
    the machine.
 
-   Layout follows the ThinkTrooper PDF house style: A4 landscape, an executive
-   summary page, a concentration page, then one detail page per pricing phase
-   in scope. Every page carries an eyebrow, a headline sentence, a lead
+   Layout follows the ThinkTrooper PDF house style: A4 landscape, opening on
+   the concentration page as its intro, then one detail page per pricing phase
+   in scope. (The executive-summary cover is parked; see summaryPage().) Every page carries an eyebrow, a headline sentence, a lead
    paragraph, numbered EXHIBIT blocks and a running footer. Every page also
    says something specific about this engagement -- that is the bar for adding
    one.
@@ -27,14 +27,17 @@
    Every string that can come from content JSON or from the facilitator is run
    through esc(): this HTML ends up in a document people hand on.
 
-   Remind the user to enable "Background graphics" in the print dialog, or the
-   heat-map shading and the header bars come out white.
+   The look follows the app, adapted for paper: exhibits are cards with a
+   coloured top rule, the heat map uses the on-screen tile grid and ramp, and
+   each phase page carries its canvas colour on --pc, as the roadmap columns
+   do. report.css sets print-color-adjust:exact so Chrome keeps the fills; still
+   remind the user to enable "Background graphics" for other browsers.
    ========================================================================== */
 
 import { APP, LOGO_SRC } from './config.js';
 import {
   TIERS, STEPS, CANVAS, OWNERS, LAYERS, STEP_CONTENT, CHALLENGES_BY_STEP,
-  canvasOfStep, layerColor
+  canvasOfStep, canvasGroups, layerColor
 } from './content.js';
 import {
   state, countAll, cellCount, stepCount, stepsInScope, countsByLayer,
@@ -75,13 +78,23 @@ function exhibit(title, body, note) {
   exhibitNo += 1;
   return '<div class="rpt-ex">' +
     '<div class="rpt-ex-h"><span class="rpt-ex-n">EXHIBIT ' + exhibitNo + '</span>' + esc(title) + '</div>' +
-    body +
+    '<div class="rpt-ex-b">' + body + '</div>' +
     (note ? '<div class="rpt-ex-note">' + esc(note) + '</div>' : '') +
     '</div>';
 }
 
-function page(inner) {
-  return '<section class="rpt-page">' + inner + '</section>';
+/* `color` is the page's accent on --pc: a phase page takes its canvas colour,
+   anything else falls back to teal in report.css. */
+function page(inner, color) {
+  return '<section class="rpt-page"' + (color ? ' style="--pc:' + color + '"' : '') + '>' + inner + '</section>';
+}
+
+/* Eyebrow, headline and lead are passed in already escaped. */
+function pageHead(eyebrow, headline, lead) {
+  return '<header class="rpt-head">' +
+    '<div class="rpt-eyebrow rpt-sec-eyebrow">' + eyebrow + '</div>' +
+    '<div class="rpt-headline">' + headline + '</div>' +
+    '<p class="rpt-lead">' + lead + '</p></header>';
 }
 
 /* The running footer lives in the @page margin boxes, which is the only place
@@ -100,6 +113,7 @@ function pageRule() {
     '}</style>';
 }
 
+/* Parked with summaryPage(), its only caller. */
 function statCol(label, value, note) {
   return '<div class="rpt-stat"><div class="rpt-stat-l">' + esc(label) + '</div>' +
     '<div class="rpt-stat-v">' + value + '</div>' +
@@ -125,6 +139,7 @@ function heaviestStep() {
   return best;
 }
 
+/* Parked with summaryPage(), its only caller. */
 function heaviestPhase() {
   let best = null;
   CANVAS.forEach(cv => {
@@ -149,12 +164,12 @@ export function buildReport() {
   const activePhases = CANVAS.filter(cv => phaseCount(cv.id) > 0);
 
   let h = pageRule() + '<div class="rpt">';
-  h += page(summaryPage(total));
+  /* summaryPage() and recommendationsPage() are parked, not called -- see
+     their notes below. */
   h += page(concentrationPage(total));
   activePhases.forEach((cv, i) => {
-    h += page(phasePage(cv, i + 1, activePhases.length, total));
+    h += page(phasePage(cv, i + 1, activePhases.length, total), cv.color);
   });
-  /* recommendationsPage() is parked, not called -- see its note below. */
   return h + '</div>';
 }
 
@@ -171,7 +186,18 @@ function layerProse(layers) {
 
 const STAGE_NAME = { D: 'Diagnose', S: 'Transform', O: 'Execute' };
 
-/* ---- page 1: executive summary ---- */
+/* ---- PARKED: executive-summary cover ------------------------------------
+   Not called by buildReport(). Review feedback was that the report should
+   open on the concentration page as its intro, so this page -- the title band
+   (logo masthead, INTERNAL eyebrow, engagement name, date), the executive
+   summary headline and lead, the four stat columns and the phase-distribution
+   exhibit -- is no longer built. Its helpers statCol(), heaviestPhase() and
+   phaseTable() are parked with it, and its styles sit in the parked block at
+   the end of report.css. To restore it, put h += page(summaryPage(total))
+   back as the first page in buildReport(), and update the expected page count
+   in tools/pdfcheck.py, the page checks in tests/checks.mjs and the page table
+   in README.md.
+   ---------------------------------------------------------------------- */
 
 function summaryPage(total) {
   const topPhase = heaviestPhase();
@@ -199,9 +225,7 @@ function summaryPage(total) {
       '<div class="rpt-h1">' + esc(engagementName()) + '</div>' +
       '<div class="rpt-sub">Aftermarket pricing process diagnostic &middot; ' + esc(reportDate()) + '</div>' +
     '</div>' +
-    '<div class="rpt-eyebrow rpt-sec-eyebrow">Executive summary</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+    pageHead('Executive summary', headline, lead) +
     '<div class="rpt-stats">' +
       statCol('What was marked', total, 'Challenges across ' + stepsInScope() + ' of ' + STEPS.length + ' process steps.') +
       statCol('Where it concentrates', esc(topPhase.phase.name.replace('Price ', '')) + ' &middot; ' + topPhase.n,
@@ -215,7 +239,7 @@ function summaryPage(total) {
       'nothing marked is not discussed further in this report.');
 }
 
-/* ---- page 2: where it concentrates ---- */
+/* ---- page 1: where it concentrates, the report's intro ---- */
 
 function concentrationPage(total) {
   const topStep = heaviestStep();
@@ -239,13 +263,12 @@ function concentrationPage(total) {
       '<td><span class="rpt-tag" style="background:' + cv.color + '">' + esc(cv.name) + '</span></td>' +
       '<td class="rr-own">' + esc(OWNERS[r.s.owner].label) + '</td>' +
       '<td class="rr-n">' + r.n + '</td>' +
-      '<td class="rr-bar"><span style="width:' + Math.round((r.n / ranked[0].n) * 100) + '%;background:' + cv.color + '"></span></td>' +
+      '<td class="rr-bar"><span class="rpt-track"><span style="width:' + Math.round((r.n / ranked[0].n) * 100) +
+        '%;background:' + cv.color + '"></span></span></td>' +
       '<td class="rr-share">' + Math.round((r.n / total) * 100) + '%</td></tr>';
   }).join('');
 
-  return '<div class="rpt-eyebrow rpt-sec-eyebrow">Where the requirements concentrate</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+  return pageHead('Where the requirements concentrate', headline, lead) +
     exhibit('Requirement concentration by process step and capability tier', heatmapTable(total),
       'Cells count marked challenges. Shading is relative to the busiest cell, not an absolute scale.') +
     exhibit('Process steps in scope, ranked by weight',
@@ -266,40 +289,61 @@ function heatmapTable(total) {
     });
   });
 
-  /* Coarser ramp than the on-screen heat map: three bands survive greyscale
-     printing and low-quality PDF rendering better than five. */
-  const shade = n => {
-    if (n === 0) return '#F4F7F9';
-    const r = n / max;
-    if (r <= 0.33) return '#CDE9EF';
-    if (r <= 0.66) return '#7FC9D6';
-    return '#1E97AE';
-  };
+  /* Same geometry as the on-screen heat map (phase band, step cards, tier
+     cards, tiles), plus the tier-total column the report has always carried. */
+  let h = '<div class="rpt-hm" style="--steps:' + STEPS.length + '">';
 
-  let h = '<table class="rpt-hm"><colgroup><col class="c-tier">';
-  STEPS.forEach(() => { h += '<col class="c-step">'; });
-  h += '<col class="c-tot"></colgroup><thead><tr><th class="rh-corner">Tier \\ Step</th>';
-  STEPS.forEach(s => { h += '<th>' + s.n + '</th>'; });
-  h += '<th class="rh-tot">Σ</th></tr></thead><tbody>';
+  h += '<div class="rh-corner"></div>';
+  canvasGroups().forEach(g => {
+    h += '<div class="rh-phase" style="grid-column:span ' + g.steps.length + ';background:' + g.cv.color + '">' +
+      esc(g.cv.name) + '</div>';
+  });
+  h += '<div class="rh-corner"></div>';
+
+  h += '<div class="rh-corner rh-lab">Tier</div>';
+  STEPS.forEach(s => {
+    h += '<div class="rh-step"><span class="rh-n">' + s.n + '</span><span class="rh-name">' + esc(s.name) + '</span></div>';
+  });
+  h += '<div class="rh-step rh-sum"><span class="rh-n">Σ</span><span class="rh-name">Tier total</span></div>';
 
   TIERS.forEach(t => {
-    h += '<tr><td class="rh-tier">' + esc(t.name) + '</td>';
+    h += '<div class="rh-tier"><b>' + esc(t.name) + '</b><span>' + esc(t.sub) + '</span></div>';
     STEPS.forEach(s => {
       const v = grid[t.id][s.id];
-      h += '<td style="background:' + shade(v) + ';color:' + (v && v / max > 0.66 ? '#fff' : '#0A2F45') + '">' + (v || '') + '</td>';
+      h += '<div class="rh-cell hb' + heatBand(v, max) + '">' + v + '</div>';
     });
-    h += '<td class="rh-tot">' + STEPS.reduce((a, s) => a + grid[t.id][s.id], 0) + '</td></tr>';
+    h += '<div class="rh-tot">' + STEPS.reduce((a, s) => a + grid[t.id][s.id], 0) + '</div>';
   });
 
-  h += '<tr class="rh-footrow"><td class="rh-tier">Step total</td>';
-  STEPS.forEach(s => { h += '<td>' + (stepCount(s.id) || '') + '</td>'; });
-  h += '<td class="rh-tot">' + total + '</td></tr></tbody></table>';
+  h += '<div class="rh-corner rh-lab rh-foot">Step total</div>';
+  STEPS.forEach(s => { h += '<div class="rh-tot">' + stepCount(s.id) + '</div>'; });
+  h += '<div class="rh-tot rh-grand">' + total + '</div></div>';
 
-  h += '<div class="rpt-legend">Step key: ' +
-    STEPS.map(s => '<b>' + s.n + '</b> ' + esc(s.name)).join(' · ') + '</div>';
-  return h;
+  return h + heatLegend(max);
 }
 
+/* The on-screen ramp from views/heatmap.js, as a band number 0-4 that
+   report.css maps to the --h1..--h4 tokens. Same thresholds, so a cell reads
+   the same shade on paper as on screen. */
+function heatBand(n, max) {
+  if (n === 0) return 0;
+  const r = n / max;
+  return r <= 0.25 ? 1 : r <= 0.5 ? 2 : r <= 0.75 ? 3 : 4;
+}
+
+/* One swatch per band that actually occurs at this maximum, labelled with the
+   counts it covers, so the key reads "1 · 2 · 3–4" rather than percentages. */
+function heatLegend(max) {
+  const bands = {};
+  for (let n = 1; n <= max; n++) (bands[heatBand(n, max)] = bands[heatBand(n, max)] || []).push(n);
+  const label = ns => ns.length > 1 ? ns[0] + '–' + ns[ns.length - 1] : String(ns[0]);
+  return '<div class="rpt-hm-key"><span class="rk-lab">Marked per cell</span>' +
+    '<span class="rk-sw hb0">0</span>' +
+    Object.keys(bands).map(b => '<span class="rk-sw hb' + b + '">' + label(bands[b]) + '</span>').join('') +
+    '</div>';
+}
+
+/* Parked with summaryPage(), its only caller. */
 function phaseTable(total) {
   const buckets = phaseBuckets();
   const max = Math.max(1, ...CANVAS.map(cv => phaseCount(cv.id)));
@@ -312,12 +356,12 @@ function phaseTable(total) {
     const mix = Object.keys(layers).filter(k => layers[k])
       .map(k => '<span class="rpt-mix" style="background:' + layerColor(k) + '">' + LAYERS[k].short + ' ' + layers[k] + '</span>')
       .join('') || '<span class="rpt-mix zero">none</span>';
-    return '<div class="rpt-phase' + (n ? '' : ' zero') + '">' +
-      '<div class="rpt-phase-n" style="color:' + cv.color + '">' + n + '</div>' +
+    return '<div class="rpt-phase' + (n ? '' : ' zero') + '" style="--pc:' + cv.color + '">' +
+      '<div class="rpt-phase-n">' + n + '</div>' +
       '<div class="rpt-phase-t">' + esc(cv.name) + '</div>' +
       '<div class="rpt-phase-s">Step' + (steps.length > 1 ? 's' : '') + ' ' + steps.map(s => s.n).join(', ') +
       ' &middot; ' + esc([...new Set(steps.map(s => OWNERS[s.owner].label))].join(' / ')) + '</div>' +
-      '<div class="rpt-bar"><span style="width:' + Math.round((n / max) * 100) + '%;background:' + cv.color + '"></span></div>' +
+      '<div class="rpt-bar"><span style="width:' + Math.round((n / max) * 100) + '%"></span></div>' +
       '<div class="rpt-phase-mix">' + mix + '</div>' +
       '<div class="rpt-phase-share">' + (total ? Math.round((n / total) * 100) : 0) + '% of all marked</div>' +
       '</div>';
@@ -353,21 +397,18 @@ function phasePage(cv, index, phaseTotal, total) {
     return '<div class="rpt-step">' +
       '<div class="rpt-step-h"><span class="rsn">' + s.n + '</span>' + esc(s.name) +
       '<span class="rpt-tags"><span class="rpt-tag ghost">' + esc(OWNERS[s.owner].label) + '</span>' +
-      '<span class="rpt-tag" style="background:' + cv.color + '">' + marked.length + ' marked</span></span></div>' +
+      '<span class="rpt-tag">' + marked.length + ' marked</span></span></div>' +
       (content ? '<div class="rpt-step-sum">' + esc(content.summary) + '</div>' : '') +
-      marked.map(c =>
+      '<div class="rpt-ch-grid">' + marked.map(c =>
         '<div class="rpt-ch"><span class="rpt-dot" style="background:' + layerColor(c.layer) + '"></span><div>' +
-        '<div class="rpt-ch-t">' + esc(c.t) +
-        ' <span class="rpt-ch-tier">' + esc(c.id) + ' &middot; ' +
-        esc(c.tiers.map(id => TIERS.find(t => t.id === id).name).join(', ')) + '</span></div>' +
+        '<div class="rpt-ch-t">' + esc(c.t) + '</div>' +
+        '<div class="rpt-ch-tier">' + esc(c.id) + ' &middot; ' +
+        esc(c.tiers.map(id => TIERS.find(t => t.id === id).name).join(', ')) + '</div>' +
         '<div class="rpt-ch-d">' + esc(c.d) + '</div></div></div>').join('') +
-      '</div>';
+      '</div></div>';
   }).join('');
 
-  return '<div class="rpt-eyebrow rpt-sec-eyebrow">Phase ' + index + ' of ' + phaseTotal +
-      ' &middot; ' + esc(cv.name.toUpperCase()) + '</div>' +
-    '<div class="rpt-headline">' + headline + '</div>' +
-    '<p class="rpt-lead">' + lead + '</p>' +
+  return pageHead('Phase ' + index + ' of ' + phaseTotal + ' &middot; ' + esc(cv.name.toUpperCase()), headline, lead) +
     exhibit('Marked challenges in ' + cv.name + ', by process step', body,
       'Each dot is the logic layer: blue data and modelling, green steering and governance, amber operational processing.') +
     '<div class="rpt-facts">' +

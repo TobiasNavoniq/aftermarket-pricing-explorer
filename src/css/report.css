@@ -3,20 +3,32 @@
 
    A4 landscape, one .rpt-page per printed sheet. Follows the ThinkTrooper PDF
    house style: tracked uppercase eyebrows, a headline sentence, a lead
-   paragraph, stat columns, numbered EXHIBIT blocks, and a running footer with
-   PAGE n OF N.
+   paragraph, numbered EXHIBIT blocks, and a running footer with PAGE n OF N.
+
+   It speaks the app's visual language, adapted for paper: exhibits are the
+   roadmap-detail card (hairline border, coloured top rule, soft header band),
+   the heat map is the on-screen tile grid and --h1..--h4 ramp, and challenge
+   lists are the roadmap's tiles. Shadows are left out: they print muddy.
+   Each page carries its accent on --pc (a phase page's canvas colour, teal
+   otherwise), exactly as the roadmap columns do.
 
    The running footer and PAGE n OF N live in @page margin boxes, in a <style>
    that report.js generates (the engagement name is per-report and the page
-   counter is only available there). .rpt-page just forces a break; the 186mm
-   min-height is the target each section should stay inside, not a guarantee.
+   counter is only available there). .rpt-page just forces a break; each
+   section must fit inside 186mm, which tools/pdfcheck.py verifies.
+
+   Figures and tracked labels use --font-figure, everything else --font-body.
+   No webfonts: the print output must not depend on one having loaded.
 
    The whole report is hidden on screen and only revealed by body.printing.
    ========================================================================== */
 
 .report-mount{display:none}
 
-.rpt{font-family:var(--font-body);color:#13202A;width:100%;max-width:100%;box-sizing:border-box;overflow-wrap:break-word}
+/* print-color-adjust keeps the fills in Chrome even with "Background graphics"
+   unticked; other browsers still need the box ticked. */
+.rpt{font-family:var(--font-body);color:var(--ink);width:100%;max-width:100%;box-sizing:border-box;
+  overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .rpt *{box-sizing:border-box}
 .rpt-empty{font-size:13px;color:var(--mute);padding:20px 0}
 
@@ -25,112 +37,122 @@
    pushes its last exhibit onto a second sheet. break-after is what guarantees
    one section per sheet; 186mm is the budget each section must fit inside,
    which tools/pdfcheck.py verifies. */
-.rpt-page{position:relative;break-after:page;page-break-after:always}
+.rpt-page{position:relative;break-after:page;page-break-after:always;--pc:var(--teal)}
 .rpt-page:last-child{break-after:auto;page-break-after:auto}
 
-/* ---- title band, first page only ---- */
-.rpt-title-band{position:relative;border-bottom:3px solid var(--teal);padding-bottom:11px;margin-bottom:16px}
-.rpt-masthead{position:absolute;top:0;right:0;height:11mm;width:auto;filter:brightness(0);opacity:.9}
-.rpt-h1{font-size:26px;font-weight:800;color:var(--navy);margin-top:5px;letter-spacing:-.015em;line-height:1.1}
-.rpt-sub{font-size:11.5px;color:var(--mute);margin-top:5px}
-
-/* ---- house-style type ---- */
+/* ---- page head: eyebrow, headline, lead ---- */
+.rpt-head{margin-bottom:12px}
 .rpt-eyebrow{font-family:var(--font-figure);font-size:8.5px;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;color:var(--teal-d)}
-.rpt-sec-eyebrow{color:var(--mute);margin-bottom:7px}
+.rpt-sec-eyebrow{color:var(--mute);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.rpt-sec-eyebrow::before{content:"";width:22px;height:3px;border-radius:2px;background:var(--pc);flex:none}
 .rpt-headline{font-size:17.5px;font-weight:700;color:var(--navy);line-height:1.3;letter-spacing:-.01em;
-  max-width:215mm;margin-bottom:9px}
-.rpt-lead{font-size:10.5px;color:#33444F;line-height:1.55;max-width:250mm;margin-bottom:11px}
+  max-width:250mm;margin-bottom:7px}
+.rpt-lead{font-size:10.5px;color:var(--ink);line-height:1.55;max-width:250mm;margin:0;
+  border-left:3px solid var(--pc);padding-left:11px}
 
-/* ---- stat columns ---- */
-.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #DCE6EA;
-  border-bottom:1px solid #DCE6EA;margin-bottom:14px}
-.rpt-stat{padding:9px 16px 10px;border-right:1px solid #DCE6EA}
-.rpt-stat:last-child{border-right:none}
-.rpt-stat-l{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--mute)}
-.rpt-stat-v{font-size:19px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em;line-height:1.15}
-.rpt-stat-n{font-size:9px;color:#5F6A72;line-height:1.45;margin-top:4px}
-
-/* ---- exhibits ---- */
-.rpt-ex{margin-bottom:11px;break-inside:avoid}
-.rpt-ex-h{font-size:11px;font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:baseline;gap:9px;
+/* ---- exhibits: the roadmap detail card ---- */
+.rpt-ex{margin-bottom:10px;break-inside:avoid;background:var(--card);border:1px solid var(--line);
+  border-top:3px solid var(--pc);border-radius:12px;overflow:hidden}
+.rpt-ex-h{font-size:11px;font-weight:800;color:var(--navy);display:flex;align-items:baseline;gap:9px;
+  padding:8px 14px 7px;background:linear-gradient(180deg,var(--paper),var(--wash));border-bottom:1px solid var(--line);
   break-after:avoid;page-break-after:avoid}
-.rpt-ex-n{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--teal-d);
-  border:1px solid #BFE0E8;border-radius:3px;padding:1px 5px;flex:none}
-.rpt-ex-note{font-size:8px;color:var(--mute);line-height:1.5;margin-top:5px;font-style:italic}
+.rpt-ex-n{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;color:var(--teal-d);flex:none}
+.rpt-ex-b{padding:10px 14px}
+.rpt-ex-note{font-size:8px;color:var(--mute);line-height:1.5;padding:0 14px 8px;margin-top:-3px;font-style:italic}
 
-/* ---- heat-map table ---- */
-.rpt-hm{width:100%;table-layout:fixed;border-collapse:collapse;font-size:10px;font-family:var(--font-figure)}
-.rpt-hm th,.rpt-hm td{border:1px solid #DCE6EA;text-align:center;padding:4px 2px;overflow:hidden}
-.rpt-hm thead th{background:var(--navy);color:#fff;font-weight:700}
-.rpt-hm col.c-tier{width:23%} .rpt-hm col.c-step{width:7.4%} .rpt-hm col.c-tot{width:7.4%}
-.rpt-hm .rh-corner,.rpt-hm .rh-tier{text-align:left;background:#EEF3F5;color:var(--navy);font-weight:700;
-  padding-left:7px;white-space:normal;line-height:1.2;font-family:var(--font-body);font-size:9.5px}
-.rpt-hm .rh-tot{background:var(--navy-2);color:#fff;font-weight:800}
-.rpt-hm .rh-footrow td{background:#E7EEF1;color:var(--navy);font-weight:800}
-.rpt-legend{font-size:8px;color:var(--mute);margin-top:6px;line-height:1.6}
-.rpt-legend b{color:var(--navy);font-family:var(--font-figure)}
+/* ---- heat map: the on-screen tile grid ---- */
+/* One grid for the whole exhibit, so the phase band, step cards, tiles and
+   totals share columns the way .mx-band rows do on screen. --steps is set by
+   report.js from taxonomy.json. */
+.rpt-hm{display:grid;grid-template-columns:40mm repeat(var(--steps,9),1fr) 15mm;gap:3px;
+  font-family:var(--font-figure)}
+.rh-corner{min-height:0}
+.rh-lab{display:flex;align-items:flex-end;padding:0 0 4px 2px;font-size:7.5px;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--mute)}
+.rh-phase{border-radius:6px;color:#fff;font-family:var(--font-body);font-size:9.5px;font-weight:700;
+  padding:4px 8px;letter-spacing:.01em}
+.rh-step{background:var(--navy);color:#fff;border-radius:6px;padding:5px 4px;text-align:center;display:flex;
+  flex-direction:column;justify-content:center;min-height:33px}
+.rh-step .rh-n{font-size:12px;font-weight:700;color:var(--teal);line-height:1}
+.rh-step .rh-name{font-family:var(--font-body);font-size:7.5px;color:var(--h1);margin-top:2px;line-height:1.2}
+.rh-step.rh-sum{background:var(--navy-2)}
+.rh-tier{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:3px 9px;display:flex;
+  flex-direction:column;justify-content:center;font-family:var(--font-body)}
+.rh-tier b{font-size:9.5px;color:var(--navy)}
+.rh-tier span{font-size:8px;color:var(--mute);margin-top:1px}
+.rh-cell{border-radius:6px;min-height:27px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;border:1px solid transparent}
+.rh-tot{background:var(--navy-2);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;min-height:20px}
+.rh-tot.rh-grand{background:var(--navy)}
+.rh-foot{align-items:center;justify-content:flex-end;padding:0 8px 0 0}
 
-/* ---- phase distribution ---- */
-.rpt-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.rpt-phase{border:1px solid #DCE6EA;border-radius:7px;padding:8px 10px 9px}
-.rpt-phase.zero{opacity:.55}
-.rpt-phase-n{font-family:var(--font-figure);font-size:22px;font-weight:700;line-height:1}
-.rpt-phase-t{font-size:10.5px;font-weight:800;color:var(--navy);margin-top:2px}
-.rpt-phase-s{font-size:8px;color:var(--mute);margin-top:2px;line-height:1.4}
-.rpt-bar{height:4px;background:#EDF2F4;border-radius:3px;margin:7px 0 6px;overflow:hidden}
-.rpt-bar span{display:block;height:100%;border-radius:3px}
-.rpt-phase-mix{display:flex;gap:3px;flex-wrap:wrap}
-.rpt-mix{font-family:var(--font-figure);font-size:7px;font-weight:700;color:#fff;padding:1px 5px;border-radius:9px;
-  letter-spacing:.03em}
-.rpt-mix.zero{background:#E7EEF1;color:#8A98A0}
-.rpt-phase-share{font-size:8px;color:var(--mute);margin-top:5px}
+/* The ramp, shared by the tiles and the key. */
+.hb0{background:var(--wash);color:var(--h-zero);border-color:var(--line)}
+.hb1{background:var(--h1);color:var(--h-ink)}
+.hb2{background:var(--h2);color:var(--h-ink-d)}
+.hb3{background:var(--h3);color:#fff}
+.hb4{background:var(--h4);color:#fff}
+
+.rpt-hm-key{display:flex;align-items:center;gap:4px;margin-top:6px;font-family:var(--font-figure)}
+.rk-lab{font-size:7.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mute);margin-right:6px}
+.rk-sw{font-size:8px;font-weight:700;min-width:26px;padding:2px 6px;border-radius:4px;text-align:center;
+  border:1px solid transparent}
 
 /* ---- ranked step table ---- */
 .rpt-rank{width:100%;border-collapse:collapse;font-size:9.5px}
 .rpt-rank thead th{text-align:left;font-family:var(--font-figure);font-size:7.5px;font-weight:700;
-  letter-spacing:.13em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid #DCE6EA;padding:0 8px 4px 0}
-.rpt-rank td{padding:3px 8px 3px 0;border-bottom:1px solid #EDF2F4;vertical-align:middle}
+  letter-spacing:.13em;text-transform:uppercase;color:var(--mute);border-bottom:1px solid var(--line);padding:0 8px 4px 0}
+.rpt-rank td{padding:2px 8px 2px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.rpt-rank tr:last-child td{border-bottom:none}
 .rpt-rank .rr-rank{font-family:var(--font-figure);color:var(--mute);width:22px}
-.rpt-rank .rr-step{color:var(--ink)}
-.rpt-rank .rr-step b{font-family:var(--font-figure);color:var(--navy)}
+.rpt-rank .rr-step{color:var(--ink);font-weight:600}
+.rpt-rank .rr-step b{font-family:var(--font-figure);color:var(--navy);margin-right:3px}
 .rpt-rank .rr-own{color:var(--mute);font-size:9px;white-space:nowrap}
 .rpt-rank .rr-n{font-family:var(--font-figure);font-weight:700;color:var(--navy);text-align:right;width:44px}
 .rpt-rank .rr-bar{width:34%}
-.rpt-rank .rr-bar span{display:block;height:5px;border-radius:3px}
 .rpt-rank .rr-share{font-family:var(--font-figure);color:var(--mute);text-align:right;width:44px}
+.rpt-track{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden}
+.rpt-track span{display:block;height:100%;border-radius:3px}
 
-/* ---- per-step challenge blocks ---- */
-.rpt-step{margin-bottom:10px;break-inside:avoid}
-.rpt-step:last-child{margin-bottom:0}
-.rpt-step-h{font-size:11.5px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.rpt-step-h .rsn{background:var(--navy);color:#fff;width:18px;height:18px;border-radius:4px;display:inline-flex;
-  align-items:center;justify-content:center;font-size:10px;font-weight:800;flex:none;font-family:var(--font-figure)}
-.rpt-step-sum{font-size:8.5px;color:var(--mute);line-height:1.5;margin:0 0 5px 26px;font-style:italic}
+/* ---- tags: the roadmap's .rd-tag ---- */
 .rpt-tags{margin-left:auto;display:flex;gap:5px;flex:none}
-.rpt-tag{font-size:8px;font-weight:700;color:#fff;padding:2px 7px;border-radius:10px;white-space:nowrap}
-.rpt-tag.ghost{background:#EEF3F5;color:var(--navy);border:1px solid #DCE6EA}
-.rpt-ch{display:flex;gap:7px;padding:3px 0 3px 26px;break-inside:avoid}
-.rpt-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:3px}
-.rpt-ch-t{font-size:10px;font-weight:700;color:#1A2730}
-.rpt-ch-tier{font-weight:600;color:var(--mute);font-size:8px;font-family:var(--font-figure);letter-spacing:.04em}
-.rpt-ch-d{font-size:9px;color:#52606B;line-height:1.45;margin-top:1px}
+.rpt-tag{font-size:8px;font-weight:700;color:#fff;background:var(--pc);padding:2px 8px;border-radius:10px;
+  white-space:nowrap;letter-spacing:.02em}
+.rpt-tag.ghost{background:var(--tint);color:var(--navy);border:1px solid var(--line)}
 
-/* ---- bottom fact strip ---- */
-.rpt-facts{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #DCE6EA;padding-top:8px;margin-top:10px}
-.rpt-fact{padding-right:16px}
+/* ---- per-step challenge blocks: the roadmap's phase detail ---- */
+.rpt-step{padding:0 0 9px;margin-bottom:9px;border-bottom:1px solid var(--line);break-inside:avoid}
+.rpt-step:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.rpt-step-h{font-size:11.5px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.rpt-step-h .rsn{background:var(--pc);color:#fff;width:19px;height:19px;border-radius:5px;display:inline-flex;
+  align-items:center;justify-content:center;font-size:10px;font-weight:700;flex:none;font-family:var(--font-figure)}
+.rpt-step-sum{font-size:8.5px;color:var(--mute);line-height:1.5;margin:0 0 6px 27px}
+.rpt-ch-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 6px;margin-left:27px}
+.rpt-ch{display:flex;gap:7px;padding:5px 9px 6px;background:var(--wash);border:1px solid var(--line);border-radius:7px;
+  break-inside:avoid}
+.rpt-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-top:3px}
+.rpt-ch-t{font-size:9.5px;font-weight:700;color:var(--ink);line-height:1.3}
+.rpt-ch-tier{font-weight:600;color:var(--teal-d);font-size:7.5px;font-family:var(--font-figure);letter-spacing:.04em;margin-top:1px}
+.rpt-ch-d{font-size:8.5px;color:var(--mute);line-height:1.45;margin-top:2px}
+
+/* ---- fact strip: the roadmap's summary strip ---- */
+.rpt-facts{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:8px 0}
+.rpt-fact{padding:0 16px;border-right:1px solid var(--line)}
+.rpt-fact:last-child{border-right:none}
 .rpt-fact span{display:block;font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--mute)}
-.rpt-fact b{display:block;font-size:12px;color:var(--navy);margin-top:2px}
+.rpt-fact b{display:block;font-size:13px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em}
 
 /* ---- technical recommendations, print variant ---- */
 .ti-print{margin-top:2px;columns:2;column-gap:14mm}
 .ti-print-block{margin-bottom:12px;break-inside:avoid}
 .ti-print-title{font-size:11px;font-weight:800;color:var(--navy);margin-bottom:3px;break-after:avoid}
 .ti-print-lead{font-size:8.5px;color:var(--mute);font-style:italic;line-height:1.45;margin-bottom:6px;break-after:avoid}
-.ti-print-item{font-size:9px;color:#33444F;line-height:1.5;margin-bottom:6px;padding-left:10px;
-  border-left:2px solid #CDE9EF;break-inside:avoid}
+.ti-print-item{font-size:9px;color:var(--ink);line-height:1.5;margin-bottom:6px;padding-left:10px;
+  border-left:2px solid var(--h1);break-inside:avoid}
 .ti-print-h{font-weight:700;color:var(--ink)}
 
 @media print{
@@ -145,7 +167,7 @@
   body.printing>*{display:none !important}
   body.printing .report-mount{display:block !important;width:100%}
   .rpt{font-size:100%}
-  .rpt-step,.rpt-ch,.rpt-hm tr,.rpt-ex,.rpt-phase{break-inside:avoid}
+  .rpt-step,.rpt-ch,.rpt-ex,.rpt-phase{break-inside:avoid}
   .ti-print-item,.ti-print-block{break-inside:avoid}
 }
 
@@ -155,6 +177,47 @@
    the sheet, and quietly added pages. The printed layout must never depend on
    window size. */
 @media screen and (max-width:1000px){
-  .rpt-stats,.rpt-facts{grid-template-columns:repeat(2,1fr)}
+  .rpt-facts{grid-template-columns:repeat(2,1fr)}
+  .rpt-ch-grid{grid-template-columns:1fr}
+}
+
+/* ---- PARKED: executive-summary cover ----------------------------------
+   Used only by summaryPage() in report.js, which is parked, not called: the
+   report now opens on the concentration page. Kept, already restyled to
+   match the rest of the report, so the cover can come back in one step --
+   see the note above summaryPage().
+   ---------------------------------------------------------------------- */
+/* ---- title band, first page only ---- */
+.rpt-title-band{position:relative;border-bottom:3px solid var(--teal);padding-bottom:11px;margin-bottom:16px}
+.rpt-masthead{position:absolute;top:0;right:0;height:11mm;width:auto;filter:brightness(0);opacity:.9}
+.rpt-h1{font-size:26px;font-weight:800;color:var(--navy);margin-top:5px;letter-spacing:-.015em;line-height:1.1}
+.rpt-sub{font-size:11.5px;color:var(--mute);margin-top:5px}
+
+/* ---- stat columns, executive summary ---- */
+.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);
+  border-radius:12px;padding:9px 0 10px;margin-bottom:12px}
+.rpt-stat{padding:0 16px;border-right:1px solid var(--line)}
+.rpt-stat:last-child{border-right:none}
+.rpt-stat-l{font-family:var(--font-figure);font-size:7.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--mute)}
+.rpt-stat-v{font-size:19px;font-weight:800;color:var(--navy);margin-top:3px;letter-spacing:-.01em;line-height:1.15}
+.rpt-stat-n{font-size:9px;color:var(--mute);line-height:1.45;margin-top:4px}
+
+/* ---- phase distribution, executive summary: the roadmap columns ---- */
+.rpt-phases{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.rpt-phase{border:1px solid var(--line);border-top:3px solid var(--pc);border-radius:10px;padding:8px 10px 9px}
+.rpt-phase.zero{opacity:.55}
+.rpt-phase-n{font-family:var(--font-figure);font-size:22px;font-weight:700;line-height:1;color:var(--pc)}
+.rpt-phase-t{font-size:10.5px;font-weight:800;color:var(--navy);margin-top:2px}
+.rpt-phase-s{font-size:8px;color:var(--mute);margin-top:2px;line-height:1.4}
+.rpt-bar{height:5px;background:var(--bg);border-radius:3px;margin:7px 0 6px;overflow:hidden}
+.rpt-bar span{display:block;height:100%;border-radius:3px;background:var(--pc)}
+.rpt-phase-mix{display:flex;gap:3px;flex-wrap:wrap}
+.rpt-mix{font-family:var(--font-figure);font-size:7px;font-weight:700;color:#fff;padding:1px 5px;border-radius:9px;
+  letter-spacing:.03em}
+.rpt-mix.zero{background:var(--tint);color:var(--h-zero)}
+.rpt-phase-share{font-size:8px;color:var(--mute);margin-top:5px}
+@media screen and (max-width:1000px){
+  .rpt-stats{grid-template-columns:repeat(2,1fr)}
   .rpt-phases{grid-template-columns:repeat(2,1fr)}
 }

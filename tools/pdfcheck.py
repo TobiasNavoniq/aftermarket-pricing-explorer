@@ -126,10 +126,11 @@ def main() -> None:
     tmp = Path(tempfile.mkdtemp(prefix="apepdf_"))
     harness = make_harness(build, tmp / "harness.html")
 
-    # 1 executive summary + 1 concentration + one page per pricing phase in scope.
+    # 1 concentration page (the intro) + one page per pricing phase in scope.
+    # The executive-summary cover is parked in report.js; restoring it adds 1.
     phases = {json.loads((ROOT / "content" / "taxonomy.json").read_text(encoding="utf-8"))
               ["steps"][int(c[1]) - 1]["canvas"] for c in SAMPLE}
-    expected = 2 + len(phases)
+    expected = 1 + len(phases)
 
     failures = []
     for width in WIDTHS:

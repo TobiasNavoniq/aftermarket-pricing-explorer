@@ -90,9 +90,29 @@
 .rd-fact b{color:var(--ink);text-align:right}
 .rd-stage{font-size:11.5px;color:var(--mute);line-height:1.5;margin-top:10px;background:#F4F8FA;border-radius:8px;padding:9px 12px}
 .rd-text{font-size:12.5px;color:var(--ink);line-height:1.6}
-.rd-uc{font-size:11.5px;color:var(--mute);line-height:1.5;padding:8px 0 8px 13px;border-left:2px solid var(--h2)}
-.rd-uc+.rd-uc{margin-top:6px}
+/* Reference use cases: disclosure buttons, each opening its detail inline
+   directly underneath (see useCaseDetail() in roadmap.js). */
+.rd-uc{display:block;width:100%;text-align:left;background:none;border:none;border-left:2px solid var(--h2);
+  font-family:inherit;font-size:11.5px;color:var(--mute);line-height:1.5;padding:8px 36px 8px 13px;cursor:pointer;
+  position:relative;border-radius:0 8px 8px 0;transition:background .13s,border-color .13s}
+.rd-uc+.rd-uc,.rd-uc-detail+.rd-uc{margin-top:6px}
 .rd-uc b{display:block;color:var(--navy);font-size:12px;margin-bottom:2px}
+.rd-uc::after{content:"";position:absolute;right:14px;top:50%;width:7px;height:7px;margin-top:-6px;
+  border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:rotate(45deg);transition:transform .2s}
+.rd-uc:hover{background:var(--wash);border-left-color:var(--sky)}
+.rd-uc.on{background:var(--tint);border-left-color:var(--pc,var(--teal))}
+.rd-uc.on::after{transform:rotate(-135deg);margin-top:-2px}
+.rd-uc:focus-visible{outline:2px solid var(--sky);outline-offset:1px}
+.rd-uc-detail{padding:14px 16px 16px 15px;border-left:2px solid var(--pc,var(--teal));
+  background:var(--paper);border-radius:0 0 8px 0;animation:rise .22s ease}
+.rd-uc-flow{list-style:none;counter-reset:ucf;margin:0;padding:0}
+.rd-uc-flow li{counter-increment:ucf;position:relative;padding:1px 0 9px 31px;font-size:12px;color:var(--ink);line-height:1.5}
+.rd-uc-flow li::before{content:counter(ucf);position:absolute;left:0;top:0;width:22px;height:22px;border-radius:6px;
+  background:var(--pc,var(--navy));color:#fff;font-family:var(--font-mono);font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center}
+.rd-uc-actors{margin:0 0 10px}
+.rd-uc-detail .rd-fact{flex-direction:column;gap:2px}
+.rd-uc-detail .rd-fact b{text-align:left;font-weight:500;line-height:1.5}
 @media(max-width:860px){.rd-grid{grid-template-columns:1fr;gap:20px}}
 
 /* ---- phase detail: one block per step in the phase ---- */

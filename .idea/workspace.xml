@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2f6d6406-d0df-4515-bffa-a9f1c2b779e1" name="Changes" comment="" />
+    <list default="true" id="2f6d6406-d0df-4515-bffa-a9f1c2b779e1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/report.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/css/report.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/roadmap.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/css/roadmap.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/css/tokens.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/css/tokens.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/report.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/report.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/js/views/roadmap.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/js/views/roadmap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/checks.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/tests/checks.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tools/pdfcheck.py" beforeDir="false" afterPath="$PROJECT_DIR$/tools/pdfcheck.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -94,6 +105,7 @@
       <option name="presentableId" value="Default" />
       <updated>1790086022755</updated>
       <workItem from="1790086025148" duration="4779000" />
+      <workItem from="1790243085636" duration="1401000" />
     </task>
     <servers />
   </component>

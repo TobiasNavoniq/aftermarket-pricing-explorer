@@ -69,12 +69,16 @@ Do not "fix" them to `const`.
 
 **Every surface must say something about the engagement.** Technical
 Recommendations & Attention Points reads identically whatever was marked, so it
-is shown nowhere: not on the roadmap tab, not in the PDF. Three things are
+is shown nowhere: not on the roadmap tab, not in the PDF. Five things are
 **parked** — present, commented as such, not called: `renderTechnology()` in
-`views/technology.js`, its styles at the end of `roadmap.css`, and
-`recommendationsPage()` in `report.js`. `content/technology.json` stays as the
-content source. Do not delete any of it, and do not "helpfully" re-mount it;
-each file records how to if it is ever wanted back. Apply the same test to
+`views/technology.js`, its styles at the end of `roadmap.css`,
+`recommendationsPage()` in `report.js`, and the executive-summary cover —
+`summaryPage()` (with its helpers `statCol()`, `heaviestPhase()`,
+`phaseTable()`) in `report.js` and its styles in the parked block at the end
+of `report.css`. The cover was dropped on review feedback so the report opens
+on the concentration page. `content/technology.json` stays as the content
+source. Do not delete any of it, and do not "helpfully" re-mount it; each file
+records how to if it is ever wanted back. Apply the same test to
 anything new: if a page or panel would read the same for every engagement, it
 does not earn its place.
 

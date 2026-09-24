@@ -24,6 +24,9 @@
   --navy:#003B5C; --navy-2:#0A2F45; --teal:#008CA8; --teal-d:#066B80;
   --sky:#4A90A4; --ink:#1A2730; --mute:#5F6A72; --line:#E2E8EC;
   --bg:#F4F7F9; --card:#FFFFFF; --paper:#FBFCFD;
+  /* Quiet fills: --wash behind list tiles and empty cells, --tint behind ghost
+     tags. Same values the roadmap and heat map use on screen. */
+  --wash:#F7FAFB; --tint:#EEF3F5;
 
   /* ---- Logic-layer accents (D / S / O). Must match layers[].color in
           content/taxonomy.json, which is what the JS actually renders. ---- */
@@ -31,6 +34,9 @@
 
   /* ---- Heat-map intensity ramp, lightest to darkest ---- */
   --h0:#EAF6F9; --h1:#CDE9EF; --h2:#9FD6E0; --h3:#5FB9C9; --h4:#1E97AE;
+  /* Figures on the ramp: --h-ink on --h1, --h-ink-d on --h2, white above that;
+     --h-zero for a cell with nothing marked. */
+  --h-ink:#0A4257; --h-ink-d:#06303F; --h-zero:#B7C3CA;
 
   /* ---- Typography ----
      Two intentional stacks: the shell chrome is Inter, the tool surfaces and

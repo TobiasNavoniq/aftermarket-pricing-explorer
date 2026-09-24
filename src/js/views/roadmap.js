@@ -16,7 +16,13 @@
    challenge carries the delivery stage its logic layer implies (Diagnose /
    Transform / Execute), shown on the challenge detail.
 
-   `detail` is view-local and not persisted.
+   The reference use cases at the foot of a challenge detail are disclosure
+   buttons: one opens its detail inline, right under itself, so nobody has to
+   scroll to find it. Clicking it again closes it; one is open at a time.
+
+   `detail` and `openUc` are view-local and not persisted. `openUc` is dropped
+   whenever the detail it sits in changes, and when a change of marks leaves
+   no marked step that references it.
 
    The Technical Recommendations card used to sit below these columns. It is
    engagement-independent guidance, so it now appears only in the exported PDF
@@ -31,6 +37,13 @@ import { countAll, isOn, stepCount, stepsInScope, phaseBuckets, phaseCount, stag
 import { $ } from '../util.js';
 
 const detail = { kind: null, id: null };
+let openUc = null;
+
+/* A use case is on the roadmap while any step that references it has
+   something marked. */
+function ucOnRoadmap(code) {
+  return STEPS.some(s => (s.ucs || []).includes(code) && stepCount(s.id) > 0);
+}
 
 export function renderRoadmap() {
   const road = $('roadmap');
@@ -43,6 +56,7 @@ export function renderRoadmap() {
     road.innerHTML = '';
     summary.innerHTML = '';
     detail.kind = null;
+    openUc = null;
     renderDetail();
     empty.innerHTML = '<div class="empty-state"><div class="big">Nothing to sequence yet</div>' +
       'Mark applicable challenges in the matrix to lay them out across the five pricing phases.</div>';
@@ -87,6 +101,7 @@ export function renderRoadmap() {
   road.querySelectorAll('.ritem[data-ch]')
     .forEach(el => el.addEventListener('click', () => openDetail('challenge', el.dataset.ch)));
 
+  if (openUc && !ucOnRoadmap(openUc)) openUc = null;
   renderDetail();
 }
 
@@ -94,6 +109,7 @@ export function renderRoadmap() {
 function openDetail(kind, id) {
   if (detail.kind === kind && detail.id === id) { detail.kind = null; detail.id = null; }
   else { detail.kind = kind; detail.id = id; }
+  openUc = null;
   renderDetail();
   if (detail.kind) $('roadDetail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
@@ -101,7 +117,17 @@ function openDetail(kind, id) {
 function closeDetail() {
   detail.kind = null;
   detail.id = null;
+  openUc = null;
   renderDetail();
+}
+
+/* The re-render replaces the button, so hand focus back to its successor or
+   a keyboard user is dropped to the top of the page. */
+function toggleUc(code) {
+  openUc = openUc === code ? null : code;
+  renderDetail();
+  const btn = document.querySelector('#roadDetail .rd-uc[data-uc="' + code + '"]');
+  if (btn) btn.focus();
 }
 
 function markActiveRoadmap() {
@@ -131,6 +157,8 @@ function renderDetail() {
   if (close) close.addEventListener('click', closeDetail);
   box.querySelectorAll('.rd-jump[data-ch]')
     .forEach(el => el.addEventListener('click', () => openDetail('challenge', el.dataset.ch)));
+  box.querySelectorAll('.rd-uc[data-uc]')
+    .forEach(el => el.addEventListener('click', () => toggleUc(el.dataset.uc)));
   markActiveRoadmap();
 }
 
@@ -195,7 +223,11 @@ function challengeDetail(challengeId) {
 
   const useCases = (s.ucs || []).map(u => {
     const uc = USECASES[u];
-    return uc ? '<div class="rd-uc"><b>' + uc.code + ' · ' + uc.name + '</b>' + uc.purpose + '</div>' : '';
+    if (!uc) return '';
+    const open = openUc === uc.code;
+    return '<button class="rd-uc' + (open ? ' on' : '') + '" data-uc="' + uc.code + '" aria-expanded="' + open + '"' +
+      ' aria-controls="rdUc-' + uc.code + '"><b>' + uc.code + ' · ' + uc.name + '</b>' + uc.purpose + '</button>' +
+      (open ? useCaseDetail(uc) : '');
   }).join('');
 
   const inner =
@@ -216,4 +248,25 @@ function challengeDetail(challengeId) {
     (useCases ? '<div class="rd-lab rd-lab-top">Reference use cases for this step</div>' + useCases : '');
 
   return detailShell(cv.color, 'Challenge ' + c.id, c.t, meta, inner);
+}
+
+/* Everything content/use-cases.json holds for one use case bar the code, name
+   and purpose, which its button already shows. */
+function useCaseDetail(uc) {
+  return '<div class="rd-uc-detail" id="rdUc-' + uc.code + '" role="region" aria-label="' + uc.code + ' ' + uc.name + '">' +
+    '<div class="rd-grid">' +
+      '<div>' +
+        '<div class="rd-lab">Process flow</div>' +
+        '<ol class="rd-uc-flow">' + uc.flow.map(f => '<li>' + f + '</li>').join('') + '</ol>' +
+      '</div>' +
+      '<div>' +
+        '<div class="rd-lab">Actors</div>' +
+        '<div class="rd-meta rd-uc-actors">' + uc.actors.map(a => '<span class="rd-tag ghost">' + a + '</span>').join('') + '</div>' +
+        '<div class="rd-fact"><span>Trigger</span><b>' + uc.trigger + '</b></div>' +
+        '<div class="rd-fact"><span>Inputs</span><b>' + uc.inputs + '</b></div>' +
+        '<div class="rd-fact"><span>Outputs</span><b>' + uc.outputs + '</b></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="rd-stage"><b>Why it matters across the industry</b> ' + uc.pain + '</div>' +
+    '</div>';
 }

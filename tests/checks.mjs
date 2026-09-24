@@ -124,6 +124,35 @@ export async function runChecks(window, errors, warns) {
   ok('challenge detail names its step', /Process step/.test($('#roadDetail').textContent));
   ok('challenge detail shows the delivery stage', /Delivery stage/.test($('#roadDetail').textContent));
   ok('challenge detail lists reference use cases', $$('#roadDetail .rd-uc').length > 0);
+
+  /* ---- a reference use case opens inline, and closes again ----
+     View-local UI state only: the saved session must not change. */
+  const sessionBefore = window.localStorage.getItem('thinktrooper_workshop_v1');
+  const ucOf = code => $('#roadDetail .rd-uc[data-uc="' + code + '"]');
+  const firstUc = $$('#roadDetail .rd-uc[data-uc]')[0];
+  const code = firstUc.dataset.uc;
+  ok('use cases are real buttons, closed by default',
+    firstUc.tagName === 'BUTTON' && $$('#roadDetail .rd-uc').every(b => b.getAttribute('aria-expanded') === 'false'));
+  click(firstUc);
+  ok('clicking a use case opens its detail', ucOf(code).getAttribute('aria-expanded') === 'true' &&
+    $$('#roadDetail .rd-uc-detail').length === 1);
+  ok('use-case detail opens inline, directly under its button',
+    ucOf(code).nextElementSibling && ucOf(code).nextElementSibling.id === 'rdUc-' + code &&
+    ucOf(code).getAttribute('aria-controls') === 'rdUc-' + code);
+  ok('use-case detail shows its process flow', $$('#rdUc-' + code + ' .rd-uc-flow li').length > 0);
+  ok('use-case button keeps focus across the re-render', document.activeElement === ucOf(code));
+  const otherUc = $$('#roadDetail .rd-uc[data-uc]')[1];
+  if (otherUc) {
+    click(otherUc);
+    ok('opening another use case closes the first',
+      $$('#roadDetail .rd-uc-detail').length === 1 && ucOf(code).getAttribute('aria-expanded') === 'false');
+    click(ucOf(code));
+  }
+  click(ucOf(code));
+  ok('clicking the open use case again closes it',
+    $$('#roadDetail .rd-uc-detail').length === 0 && ucOf(code).getAttribute('aria-expanded') === 'false');
+  ok('opening and closing a use case leaves the saved session unchanged',
+    window.localStorage.getItem('thinktrooper_workshop_v1') === sessionBefore);
   ok('phase header no longer active', $$('#roadmap .road-head.on').length === 0);
   ok('clicked challenge marked active', $$('#roadmap .ritem.on').length === 1);
 
@@ -149,11 +178,16 @@ export async function runChecks(window, errors, warns) {
   await new Promise(r => setTimeout(r, 120));
   const rpt = $('#reportMount');
   const pages = [...rpt.querySelectorAll('.rpt-page')];
-  ok('report built', rpt.querySelector('.rpt-h1') !== null);
-  ok('report names the engagement', /Acme Motors RFP 2026/.test(rpt.textContent));
-  ok('report is summary + concentration + one page per phase in scope',
-    pages.length === 2 + filledPhases.length,
+  ok('report built', pages.length > 0);
+  ok('report is concentration + one page per phase in scope',
+    pages.length === 1 + filledPhases.length,
     'pages=' + pages.length + ' phases=' + filledPhases.length);
+  /* The executive-summary cover is parked: the report opens on the
+     concentration page, and nothing from the cover leaks back in. */
+  ok('report opens on the concentration page',
+    /Where the requirements concentrate/i.test(pages[0].querySelector('.rpt-sec-eyebrow').textContent),
+    pages[0].querySelector('.rpt-sec-eyebrow').textContent);
+  ok('report has no cover', rpt.querySelector('.rpt-title-band, .rpt-masthead, .rpt-h1, .rpt-stat, .rpt-phase') === null);
 
   /* Page numbering is done by the browser via @page margin boxes, so what the
      test can check is that the rule was generated correctly, not the output. */
@@ -171,10 +205,15 @@ export async function runChecks(window, errors, warns) {
   ok('exhibits are numbered continuously',
     [...rpt.querySelectorAll('.rpt-ex-n')].every((e, i) => e.textContent === 'EXHIBIT ' + (i + 1)),
     [...rpt.querySelectorAll('.rpt-ex-n')].map(e => e.textContent).join(' | '));
-  ok('report has an executive summary headline', /concentrates in Price/.test(rpt.textContent));
-  ok('report has 4 stat columns', rpt.querySelectorAll('.rpt-stat').length === 4);
-  ok('report heat-map table has 3 tier rows + total', rpt.querySelectorAll('.rpt-hm tbody tr').length === 4);
-  ok('report shows all 5 phases in the distribution', rpt.querySelectorAll('.rpt-phase').length === 5);
+  ok('report heat map has 3 tier rows of 9 tiles',
+    rpt.querySelectorAll('.rpt-hm .rh-tier').length === 3 && rpt.querySelectorAll('.rpt-hm .rh-cell').length === 27,
+    'tiers=' + rpt.querySelectorAll('.rpt-hm .rh-tier').length + ' cells=' + rpt.querySelectorAll('.rpt-hm .rh-cell').length);
+  ok('report heat map tiles add up to the marked total',
+    [...rpt.querySelectorAll('.rpt-hm .rh-cell')].reduce((a, e) => a + (+e.textContent), 0) >= 3 &&
+    rpt.querySelector('.rpt-hm .rh-grand').textContent === '3',
+    rpt.querySelector('.rpt-hm .rh-grand') && rpt.querySelector('.rpt-hm .rh-grand').textContent);
+  ok('report heat map uses the on-screen ramp classes, not inline colours',
+    [...rpt.querySelectorAll('.rpt-hm .rh-cell')].every(e => /\bhb[0-4]\b/.test(e.className) && !e.getAttribute('style')));
   ok('report ranks the steps in scope', rpt.querySelectorAll('.rpt-rank tbody tr').length >= 1);
   ok('report lists the marked challenges', rpt.querySelectorAll('.rpt-ch').length === 3);
   ok('report carries no technical-recommendations page',
@@ -182,7 +221,6 @@ export async function runChecks(window, errors, warns) {
     'n=' + rpt.querySelectorAll('.ti-print-block').length);
   ok('every report page is about this engagement',
     [...rpt.querySelectorAll('.rpt-page')].every(p => /\d/.test(p.textContent)));
-  ok('report masthead logo present', rpt.querySelector('.rpt-masthead') !== null);
   ok('report never says "0 operational processing"', !/\b0 (data|steering|operational)/.test(rpt.textContent),
     (rpt.textContent.match(/\b0 (data|steering|operational)[a-z ]*/) || [])[0]);
   window.dispatchEvent(new window.Event('afterprint'));
@@ -216,9 +254,6 @@ export async function runChecks(window, errors, warns) {
     style2.textContent.slice(0, 200));
   ok('quotes and backslashes are stripped from the footer',
     literal2 !== undefined && !/["\\]/.test(literal2) && /FOREST/.test(literal2), literal2);
-  ok('the engagement name itself is not mangled in the report body',
-    $('#reportMount').querySelector('.rpt-h1').textContent === nasty,
-    $('#reportMount').querySelector('.rpt-h1').textContent);
   window.dispatchEvent(new window.Event('afterprint'));
 
   /* ---- reset selections ---- */

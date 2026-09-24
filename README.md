@@ -152,9 +152,11 @@ blocks and a running footer with `PAGE n OF N`. One section per sheet:
 
 | Page | Content |
 | --- | --- |
-| 1 | Executive summary — headline, stat columns, **Exhibit 1**: distribution across the five pricing phases |
-| 2 | Where the requirements concentrate — **Exhibit 2**: heat map by step × tier, **Exhibit 3**: steps ranked by weight |
-| 3…n | One page per pricing phase in scope — marked challenges by step, with a fact strip |
+| 1 | Where the requirements concentrate, the report's intro — **Exhibit 1**: heat map by step × tier, **Exhibit 2**: steps ranked by weight |
+| 2…n | One page per pricing phase in scope — marked challenges by step, with a fact strip |
+
+The executive-summary cover that used to open the report is parked, not
+deleted: see `summaryPage()` in `src/js/report.js`.
 
 Headline and lead sentences are generated from the marked selections, so the
 report states what this engagement actually shows. That is the bar for a page
